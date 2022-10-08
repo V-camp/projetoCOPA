@@ -1,5 +1,5 @@
-
-import app from "../src/index"
+#!/usr/bin/env node
+const app = require("../src/index");
 
 const PORT = process.env.PORT || 8080;
 
