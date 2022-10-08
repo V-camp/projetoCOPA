@@ -1,16 +1,10 @@
-#!/usr/bin/env node
 
-const app = require("../src/index");
+import app from "../src/index"
 
-
-// Constants
 const PORT = process.env.PORT || 8080;
-// if you're not using docker-compose for local development, this will default to 8080
-// to prevent non-root permission problems with 80. Dockerfile is set to make this 80
-// because containers don't have that issue :)
 
-var server = app.listen(PORT, function () {
-    console.log(`Webserver is ready and listening on port ${PORT}`);
+let server = app.listen(PORT, function () {
+    console.log(`Projeto rodando na porta ${PORT}`);
   });
   
 //
