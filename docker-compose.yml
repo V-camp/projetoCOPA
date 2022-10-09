@@ -28,7 +28,6 @@ services:
       # remember to install from the parent directory to the code bind-mount:
       # docker compose exec -w /opt/node_app node npm install --save bower
       - ./package.json:/opt/node_app/package.json
-      - ./package-lock.json:/opt/node_app/package-lock.json
       # this is a workaround to prevent host node_modules from accidently getting mounted in container
       # in case you want to use node/npm both outside container for test/lint etc. and also inside container
       # this will overwrite the default node_modules dir in container so it won't conflict with our
