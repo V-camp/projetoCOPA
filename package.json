@@ -1,14 +1,14 @@
 {
-  "name": "projetocopa",
-  "private":true,
+  "name": "projeto-copa",
+  "private": true,
   "version": "0.0.1",
   "description": "Projeto Copa",
   "author": "Wedsley Fernando da Silva Milouchine <wedsleyfernando@gmail.com>,Vinicius Oliveira Campos de Souza <vinicius.campos2002@gmail.com>, Eduardo Oliveira Batista, Fernando Aramis Colque  ",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/index.js",
-    "dev-docker": "../node_modules/nodemon/bin/nodemon.js --debug=5858",
-    "dev-host": "nodemon --debug=5858",
+    "dev-docker": "../node_modules/.bin/nodemon --inspect=0.0.0.0:9229 ./bin/www",
+    "build": "tsc -p .",
     "start-watch": "nodemon index.js --inspect=0.0.0.0:9229",
     "start-wait-debuger": "nodemon index.js --inspect-brk=0.0.0.0:9229",
     "test": "cross-env NODE_ENV=test PORT=8081 mocha --timeout 10000 --exit --inspect=0.0.0.0:9230",
@@ -20,19 +20,19 @@
     "body-parser": "^1.20.1",
     "express": "^4.17.2",
     "g": "^2.0.1",
-    "tsc": "^2.0.4",
+<<<<<<< HEAD
     "express": "^4.17.2",
+=======
+>>>>>>> parent of fd3dde2 (Merge branch 'master' of https://github.com/V-camp/projetoCOPA)
     "mongodb": "^4.3.0",
     "morgan": "^1.10.0",
     "tsc": "^2.0.4"
   },
   "devDependencies": {
-    "typescript": "^4.8.4",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "cross-env": "^7.0.3",
     "mocha": "^9.1.4",
-    "nodemon": "^2.0.15",
-    "typescript": "^4.8.4"
+    "nodemon": "^2.0.15"
   }
 }
