@@ -25,6 +25,7 @@
     "tsc": "^2.0.4"
   },
   "devDependencies": {
+    "typescript": "^4.8.4",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "cross-env": "^7.0.3",
