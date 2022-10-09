@@ -1,5 +1,9 @@
 #!/usr/bin/env node
+<<<<<<< HEAD
 const app = require("../src/index");
+=======
+const app = require("../build/index");
+>>>>>>> docker_with_typescript
 
 const PORT = process.env.PORT || 8080;
 
@@ -20,7 +24,7 @@ let server = app.listen(PORT, function () {
 // quit on ctrl-c when running docker in terminal
 process.on('SIGINT', function onSigint () {
 	console.info('Got SIGINT (aka ctrl-c in docker). Graceful shutdown ', new Date().toISOString());
-  shutdown();
+    shutdown();
 });
 
 // quit properly on docker stop
