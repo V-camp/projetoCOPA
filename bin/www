@@ -1,9 +1,5 @@
 #!/usr/bin/env node
-<<<<<<< HEAD
-const app = require("../src/index");
-=======
 const app = require("../build/index");
->>>>>>> docker_with_typescript
 
 const PORT = process.env.PORT || 8080;
 

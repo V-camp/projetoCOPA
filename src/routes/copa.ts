@@ -15,7 +15,7 @@ server.get(`${path}`, async (req: Request, res: Response) => {
         return res.json(times);
     }
 
-    return res.send("Error!")        
+    return res.send("Error!");
 })
 
 server.post(`${path}/cadastrarTime`, async (req: Request, res: Response) => {
@@ -27,7 +27,7 @@ server.post(`${path}/cadastrarTime`, async (req: Request, res: Response) => {
         return res.send("Time cadastrado");
     }
 
-    return res.send("Error!")        
+    return res.send("Error!");
 })
 
 server.put(`${path}/atualizarTimes`, async (req: Request, res: Response) => {
@@ -39,7 +39,7 @@ server.put(`${path}/atualizarTimes`, async (req: Request, res: Response) => {
         return res.json(timeAtualizado);
     }
 
-    return res.send("Error!")        
+    return res.send("Error!");
 })
 
 server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
@@ -51,5 +51,5 @@ server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
         return res.json(timePerdedor);
     }
 
-    return res.send("Error!")        
+    return res.send("Error!")
 })
