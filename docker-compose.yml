@@ -21,7 +21,7 @@ services:
         ../node_modules/typescript/bin/tsc -p .
         ../node_modules/.bin/nodemon --inspect=0.0.0.0:8080 ./bin/www
     ports:
-      - "3000:3000"
+      - "80:80"
       - "8080:8080"
       - "9229:9229"
       - "9230:9230"
