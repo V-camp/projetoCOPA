@@ -8,9 +8,9 @@ let options = {
   path: '/healthz' // must be the same as HEALTHCHECK in Dockerfile
 };
 
-let request = http.request(options, (res: Response) => {
-  console.info('STATUS: ' + res.status);
-  process.exitCode = (res.status === 200) ? 0 : 1;
+let request = http.request(options, (res: any) => {
+  console.info('STATUS: ' + res.statusCode);
+  process.exitCode = (res.statusCode === 200) ? 0 : 1;
   process.exit();
 });
 
