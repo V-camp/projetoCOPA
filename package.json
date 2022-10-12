@@ -6,7 +6,7 @@
   "author": "Wedsley Fernando da Silva Milouchine <wedsleyfernando@gmail.com>,Vinicius Oliveira Campos de Souza <vinicius.campos2002@gmail.com>, Eduardo Oliveira Batista, Fernando Aramis Colque  ",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "node --inspect=localhost:8083 ./bin/www",
     "dev-docker": "../node_modules/.bin/nodemon --inspect=0.0.0.0:9229 ./bin/www",
     "build": "tsc -p .",
     "start-watch": "nodemon index.js --inspect=0.0.0.0:9229",
