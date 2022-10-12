@@ -8,13 +8,13 @@ let options = {
   path: '/healthz' // must be the same as HEALTHCHECK in Dockerfile
 };
 
-let request = http.request(options, (res: any) => {
+let request = http.request(options, (res: http.IncomingMessage) => {
   console.info('STATUS: ' + res.statusCode);
   process.exitCode = (res.statusCode === 200) ? 0 : 1;
   process.exit();
 });
 
-request.on('error', function (err: any) {
+request.on('error', function (err) {
   console.error('ERROR', err);
   process.exit(1);
 });
