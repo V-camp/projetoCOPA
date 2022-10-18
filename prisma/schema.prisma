@@ -1,5 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+const {
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+  MONGO_HOSTNAME,
+  MONGO_PORT,
+  MONGO_DATABASE_NAME
+} = process.env;
 
 generator client {
   provider = "prisma-client-js"
@@ -7,5 +12,16 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL")
+  url      = env(`mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`)
+}
+
+model Post {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  userId String @db.ObjectId
+}
+
+model User {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  email String
 }

@@ -6,10 +6,10 @@ const server = express()
 const copaController = new CopaController()
 const path: string = "copa"
 
-server.get(`${path}`, async (req: Request, res: Response) => {
 
-    const timeEmJogo = req.body
-    const times = await copaController.apresentarTimes(timeEmJogo)
+server.get(`/${path}`, async (req: Request, res: Response) => {
+
+    const times = await copaController.apresentarTimes()
 
     if (times) {
         return res.json(times);
@@ -45,7 +45,7 @@ server.put(`${path}/atualizarTimes`, async (req: Request, res: Response) => {
 server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
 
     const time = req.body
-    const timePerdedor  = await copaController.eliminarTime(time)
+    const timePerdedor = await copaController.eliminarTime(time)
 
     if (timePerdedor) {
         return res.json(timePerdedor);
@@ -53,3 +53,5 @@ server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
 
     return res.send("Error!")
 })
+
+export default server
