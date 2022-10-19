@@ -41,37 +41,44 @@ services:
       - notused:/opt/node_app/app/node_modules
     environment:
       - NODE_ENV=development
-      - MONGO_USERNAME=root
-      - MONGO_PASSWORD=example
-      - MONGO_HOSTNAME=mongo
-      - MONGO_PORT=27017
-      - MONGO_DATABASE_NAME=example-database
+      - PGADMIN_DEFAULT_EMAIL="root@email.com"
+      - PGADMIN_DEFAULT_PASSWORD="copa2022!"
+    links:
+      - "postgres:postgresdb"
     depends_on:
-      mongo:
-        condition: service_healthy
+      - postgres
     healthcheck:
       disable: true
+    networks:
+      - node-with-postgres
 
-  mongo:
-    image: mongo:4
-    ports:
-      - "27017:27017"
+  pgadmin:
+    image: dpage/pgadmin4
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=example-database
-    volumes:
-      # this is an example of how to seed data in mongo containers. The Docker Hub mongo README
-      # explains that any data dropped into the docker-entrypoint-initdb.d directory will be injected 
-      # into mongo at startup. This is also a common pattern for other db solutions like mysql or psql
-      - ./database/seed.js:/docker-entrypoint-initdb.d/seed.js
-    # we need to check health here, so that docker compose will wait for a healthy mongo before it starts node
-    healthcheck:
-      test: "[ `echo 'db.runCommand(\"ping\").ok' | mongo localhost/example-database --quiet` ] && echo 0 || echo 1"
-      interval: 5s
-      start_period: 10s
-      timeout: 4s
-      retries: 3
+      PGADMIN_DEFAULT_EMAIL: "root@email.com"
+      PGADMIN_DEFAULT_PASSWORD: "copa2022!"
+    ports:
+      - "8008:80"
+    depends_on:
+      - postgres
+    networks:
+      - node-with-postgres
+    links:
+      - "postgres:postgresdb"
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: "copa2022!"
+      POSTGRES_USER: "root"
+    ports:
+      - "5432:5432"
+    networks:
+      - node-with-postgres
 
 volumes:
   notused:
+
+networks: 
+  node-with-postgres:
+    driver: bridge

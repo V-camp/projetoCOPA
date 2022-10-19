@@ -1,6 +1,6 @@
 # if you're doing anything beyond your local machine, please pin this to a specific version at https://hub.docker.com/_/node/
 # FROM node:14-alpine also works here for a smaller image (But I prefer the more reliable debian slim)
-FROM node:16-slim
+FROM node:16
 
 # set our node environment, either development or production
 # defaults to production, compose overrides this to development on build and run
@@ -36,6 +36,7 @@ HEALTHCHECK --interval=30s CMD node healthcheck.js
 # copy in as node user, so permissions match what we need
 WORKDIR /opt/node_app/app
 COPY --chown=node:node . .
+
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
