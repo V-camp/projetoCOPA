@@ -1,5 +1,10 @@
-export interface dadosCadastroTime { 
+export interface IdadosCadastroTime { 
     nomeDoPais: string,
     qtdDeJogadores: number,
-    lider: string,
+    treinador: string,
+    capitao: string,
+    qtdDeCartaoVermelho: number,
+    qtdDeCartaoAmarelho: number,
+    estaEmJogo: string,
+    grupoPertencente: string,
 }

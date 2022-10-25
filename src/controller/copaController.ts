@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { dadosCadastroTime } from "../model/interfaces/CadastroTime"
+import { IdadosCadastroTime } from "../model/interfaces/CadastroTime"
 import { dadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
 import { timesEmJogo } from "../model/enums/TimesEmJogo"
 import { dadosTimePerdedor } from "model/interfaces/TimePerdedor"
@@ -16,25 +16,21 @@ export class CopaController {
         ] || time
     }
 
-    public async cadastrarTime(cadastroTime: dadosCadastroTime): Promise<object> {
-        const timeCriado = await prisma.user.create({
-
+    public async cadastrarTime(cadastroTime: IdadosCadastroTime): Promise<IdadosCadastroTime> {
+        const timeCriado: IdadosCadastroTime = await prisma.user.create({
             data: {
-              name: cadastroTime.nomeDoPais,
+              nomeDoPais: cadastroTime.nomeDoPais,
               qtdJogadores: cadastroTime.qtdDeJogadores,
-              liderDoTime: cadastroTime.lider,
-              emJogo: timesEmJogo.EM_JOGO,
-              posts: {
-                create: {
-                  title: 'My first post',
-                  body: 'Lots of really interesting stuff',
-                  slug: 'my-first-post',
-                },
-              },
+              treinadorDoTime: cadastroTime.treinador,
+              capitao: cadastroTime.capitao,
+              qtdDeCartaoVermelho: cadastroTime.qtdDeCartaoVermelho,
+              qtdDeCartaoAmarelho: cadastroTime.qtdDeCartaoAmarelho,
+              estaEmJogo: timesEmJogo.EM_JOGO,
+              grupoPertencente: cadastroTime.grupoPertencente,
             },
           })
 
-        return { message: "salvo" } || timeCriado
+        return timeCriado
     }
 
     public async atualizarTime(timeAtualizar: dadosAtualizarTime): Promise<object> {

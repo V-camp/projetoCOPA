@@ -1,13 +1,14 @@
 import express, { Request, Response } from "express"
+import { IdadosCadastroTime } from "model/interfaces/CadastroTime"
 import { CopaController } from "../controller/copaController"
 
 const server = express()
 
 const copaController = new CopaController()
-const path: string = "copa"
+const path: string = "/copa"
 
 
-server.get(`/${path}`, async (req: Request, res: Response) => {
+server.get(`${path}`, async (req: Request, res: Response) => {
 
     const times = await copaController.apresentarTimes()
 
@@ -20,14 +21,14 @@ server.get(`/${path}`, async (req: Request, res: Response) => {
 
 server.post(`${path}/cadastrarTime`, async (req: Request, res: Response) => {
 
-    const cadastroTime = req.body
+    const cadastroTime: IdadosCadastroTime = req.body
     const timeCadastrado = await copaController.cadastrarTime(cadastroTime)
 
     if (timeCadastrado) {
-        return res.send("Time cadastrado");
+        return res.json(timeCadastrado);
     }
 
-    return res.send("Error!");
+    return res.send("Error! - Dados inseridos inválidos ou faltandes");
 })
 
 server.put(`${path}/atualizarTimes`, async (req: Request, res: Response) => {
