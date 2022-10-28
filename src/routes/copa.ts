@@ -10,7 +10,7 @@ const path: string = "/copa"
 
 server.get(`${path}`, async (req: Request, res: Response) => {
 
-    const times = await copaController.apresentarTimes()
+    const times = await copaController.buscarTodosOsTimes()
 
     if (times) {
         return res.json(times);
@@ -50,6 +50,17 @@ server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
 
     if (timePerdedor) {
         return res.json(timePerdedor);
+    }
+
+    return res.send("Error!")
+})
+
+server.get(`${path}/listarAsDisputadasIniciais`, async (req: Request, res: Response) => {
+
+    const disputadasIniciais = await copaController.listarAsDisputadasIniciais()
+
+    if (disputadasIniciais) {
+        return res.json(disputadasIniciais);
     }
 
     return res.send("Error!")
