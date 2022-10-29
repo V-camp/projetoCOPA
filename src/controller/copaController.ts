@@ -228,24 +228,6 @@ export class CopaController {
         // @ts-ignore
         timesVencedoresMatchDay1.push(utils.timeVencedor(vendoresDia1.day1[disputaGrupos[i]]))
     }
-    // const timesVencedorMatch1GrupoB = utils.timeVencedor(vendoresDia1.day1.disputaGrupoB)
-    // const timesVencedorMatch1GrupoC = utils.timeVencedor(vendoresDia1.day1.disputaGrupoC)
-    // const timesVencedorMatch1GrupoD = utils.timeVencedor(vendoresDia1.day1.disputaGrupoD)
-    // const timesVencedorMatch1GrupoE = utils.timeVencedor(vendoresDia1.day1.disputaGrupoE)
-    // const timesVencedorMatch1GrupoF = utils.timeVencedor(vendoresDia1.day1.disputaGrupoF)
-    // const timesVencedorMatch1GrupoG = utils.timeVencedor(vendoresDia1.day1.disputaGrupoG)
-    // const timesVencedorMatch1GrupoH = utils.timeVencedor(vendoresDia1.day1.disputaGrupoH)
-
-    // timesVencedoresMatchDay1.push(
-    //   timesVencedorMatch1GrupoA, 
-    //   timesVencedorMatch1GrupoB,
-    //   timesVencedorMatch1GrupoC,
-    //   timesVencedorMatch1GrupoD,
-    //   timesVencedorMatch1GrupoE,
-    //   timesVencedorMatch1GrupoF,
-    //   timesVencedorMatch1GrupoG,
-    //   timesVencedorMatch1GrupoH,
-    // )
 
     return timesVencedoresMatchDay1;
   }
