@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import { IdadosCadastroTime } from "model/interfaces/CadastroTime"
+import { IdadosTime } from "model/interfaces/DadosTime"
 import { CopaController } from "../controller/copaController"
 
 const server = express()
@@ -21,7 +21,7 @@ server.get(`${path}`, async (req: Request, res: Response) => {
 
 server.post(`${path}/cadastrarTime`, async (req: Request, res: Response) => {
 
-    const cadastroTime: IdadosCadastroTime = req.body
+    const cadastroTime: IdadosTime = req.body
     const timeCadastrado = await copaController.cadastrarTime(cadastroTime)
 
     if (timeCadastrado) {
@@ -58,6 +58,17 @@ server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
 server.get(`${path}/listarAsDisputadasIniciais`, async (req: Request, res: Response) => {
 
     const disputadasIniciais = await copaController.listarAsDisputadasIniciais()
+
+    if (disputadasIniciais) {
+        return res.json(disputadasIniciais);
+    }
+
+    return res.send("Error!")
+})
+
+server.get(`${path}/mostrarVencedorDoMatch`, async (req: Request, res: Response) => {
+
+    const disputadasIniciais = await copaController.decidirVencedor()
 
     if (disputadasIniciais) {
         return res.json(disputadasIniciais);

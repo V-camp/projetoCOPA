@@ -1,4 +1,4 @@
-export interface IdadosCadastroTime { 
+export interface IdadosTime { 
     nomeDoPais: string,
     qtdDeJogadores: number,
     treinador: string,

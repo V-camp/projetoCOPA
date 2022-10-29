@@ -1,10 +1,10 @@
 export interface IMatchDay {
-    disputaGrupoA: string;
-    disputaGrupoB: string;
-    disputaGrupoC: string;
-    disputaGrupoD: string;
-    disputaGrupoE: string;
-    disputaGrupoF: string;
-    disputaGrupoG: string;
-    disputaGrupoH: string;
+    disputaGrupoA: Array<string>;
+    disputaGrupoB: Array<string>;
+    disputaGrupoC: Array<string>;
+    disputaGrupoD: Array<string>;
+    disputaGrupoE: Array<string>;
+    disputaGrupoF: Array<string>;
+    disputaGrupoG: Array<string>;
+    disputaGrupoH: Array<string>;
 }

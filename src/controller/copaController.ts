@@ -1,5 +1,6 @@
+import { Utils } from './../util/utils';
 import { PrismaClient } from "@prisma/client"
-import { IdadosCadastroTime } from "../model/interfaces/CadastroTime"
+import { IdadosTime } from "../model/interfaces/DadosTime"
 import { dadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
 import { timesEmJogo } from "../model/enums/TimesEmJogo"
 import { dadosTimePerdedor } from "model/interfaces/TimePerdedor"
@@ -8,9 +9,10 @@ import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 
 const prisma = new PrismaClient()
+const utils = new Utils()
 
 export class CopaController {
-  public async buscarTodosOsTimes(): Promise<Array<IdadosCadastroTime>> {
+  public async buscarTodosOsTimes(): Promise<Array<IdadosTime>> {
       const time = await prisma.times.findMany();
       
       return [
@@ -20,19 +22,19 @@ export class CopaController {
       ] || time
   }
 
-  public async cadastrarTime(cadastroTime: IdadosCadastroTime): Promise<IdadosCadastroTime> {
+  public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {
 
-    const timeJaExiste: IdadosCadastroTime = await prisma.times.findUnique({
+    const timeJaExiste: IdadosTime = await prisma.times.findUnique({
       where: {
         nomeDoPais: cadastroTime.nomeDoPais,
       },
     })
 
-    const quantidadeDeTimes: Array<IdadosCadastroTime> = await this.buscarTodosOsTimes()
+    const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
     const grupos: Array<string> = []
 
-    quantidadeDeTimes.forEach((timeAtual: IdadosCadastroTime) => grupos.push(timeAtual.grupoPertencente))
+    quantidadeDeTimes.forEach((timeAtual: IdadosTime) => grupos.push(timeAtual.grupoPertencente))
       
     let qtdNoGrupo = 0;
     const gruposPossiveis = ["A", "B", "C", "D", "E", "F", "G", "H"]
@@ -47,7 +49,7 @@ export class CopaController {
     })
 
     if (!timeJaExiste && quantidadeDeTimes.length <= 32 && qtdNoGrupo < 4) {
-      const timeCriado: IdadosCadastroTime = await prisma.user.create({
+      const timeCriado: IdadosTime = await prisma.user.create({
         data: {
           nomeDoPais: cadastroTime.nomeDoPais,
           qtdJogadores: cadastroTime.qtdDeJogadores,
@@ -100,7 +102,7 @@ export class CopaController {
 
   public async listarAsDisputadasIniciais (): Promise<IDisputasMatchDays> {
 
-    const times: Array<IdadosCadastroTime> = await this.buscarTodosOsTimes()
+    const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
     const grupoTime: IGruposTimes = this.timesEmCadaGrupo(times);
 
@@ -109,16 +111,16 @@ export class CopaController {
     return matchDay;
   }
 
-  public timesEmCadaGrupo(times: Array<IdadosCadastroTime>) {
+  public timesEmCadaGrupo(times: Array<IdadosTime>) {
     return {
-      timesNoGrupoA: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "A"),
-      timesNoGrupoB: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "B"),
-      timesNoGrupoC: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "C"),
-      timesNoGrupoD: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "D"),
-      timesNoGrupoE: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "E"),
-      timesNoGrupoF: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "F"),
-      timesNoGrupoG: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "G"),
-      timesNoGrupoH: times.filter((time: IdadosCadastroTime) => time.grupoPertencente === "H"),
+      timesNoGrupoA: times.filter((time: IdadosTime) => time.grupoPertencente === "A"),
+      timesNoGrupoB: times.filter((time: IdadosTime) => time.grupoPertencente === "B"),
+      timesNoGrupoC: times.filter((time: IdadosTime) => time.grupoPertencente === "C"),
+      timesNoGrupoD: times.filter((time: IdadosTime) => time.grupoPertencente === "D"),
+      timesNoGrupoE: times.filter((time: IdadosTime) => time.grupoPertencente === "E"),
+      timesNoGrupoF: times.filter((time: IdadosTime) => time.grupoPertencente === "F"),
+      timesNoGrupoG: times.filter((time: IdadosTime) => time.grupoPertencente === "G"),
+      timesNoGrupoH: times.filter((time: IdadosTime) => time.grupoPertencente === "H"),
     }
   }
 
@@ -126,81 +128,81 @@ export class CopaController {
   public matchDays(gruposTimes: IGruposTimes): IDisputasMatchDays {
 
     const day1: IMatchDay = {
-      disputaGrupoA: `${gruposTimes.timesNoGrupoA[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoA[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoA[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoA[3].nomeDoPais}`,
+      disputaGrupoA:  [gruposTimes.timesNoGrupoA[0].nomeDoPais, gruposTimes.timesNoGrupoA[1].nomeDoPais, 
+                       gruposTimes.timesNoGrupoA[2].nomeDoPais, gruposTimes.timesNoGrupoA[3].nomeDoPais],
 
-      disputaGrupoB: `${gruposTimes.timesNoGrupoB[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoB[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoB[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoB[3].nomeDoPais}`,
+      disputaGrupoB: [gruposTimes.timesNoGrupoB[0].nomeDoPais, gruposTimes.timesNoGrupoB[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoB[2].nomeDoPais, gruposTimes.timesNoGrupoB[3].nomeDoPais],
 
-      disputaGrupoC: `${gruposTimes.timesNoGrupoC[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoC[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoC[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoC[3].nomeDoPais}`,
+      disputaGrupoC: [gruposTimes.timesNoGrupoC[0].nomeDoPais, gruposTimes.timesNoGrupoC[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoC[2].nomeDoPais, gruposTimes.timesNoGrupoC[3].nomeDoPais],
 
-      disputaGrupoD: `${gruposTimes.timesNoGrupoD[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoD[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoD[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoD[3].nomeDoPais}`,
+      disputaGrupoD: [gruposTimes.timesNoGrupoD[0].nomeDoPais, gruposTimes.timesNoGrupoD[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoD[2].nomeDoPais, gruposTimes.timesNoGrupoD[3].nomeDoPais],
                       
-      disputaGrupoE: `${gruposTimes.timesNoGrupoE[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoE[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoE[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoE[3].nomeDoPais}`,
+      disputaGrupoE: [gruposTimes.timesNoGrupoE[0].nomeDoPais, gruposTimes.timesNoGrupoE[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoE[2].nomeDoPais, gruposTimes.timesNoGrupoE[3].nomeDoPais],
 
-      disputaGrupoF: `${gruposTimes.timesNoGrupoF[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoF[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoF[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoF[3].nomeDoPais}`,
+      disputaGrupoF: [gruposTimes.timesNoGrupoF[0].nomeDoPais, gruposTimes.timesNoGrupoF[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoF[2].nomeDoPais, gruposTimes.timesNoGrupoF[3].nomeDoPais],
 
-      disputaGrupoG: `${gruposTimes.timesNoGrupoG[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoG[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoG[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoG[3].nomeDoPais}`,
+      disputaGrupoG: [gruposTimes.timesNoGrupoG[0].nomeDoPais, gruposTimes.timesNoGrupoG[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoG[2].nomeDoPais, gruposTimes.timesNoGrupoG[3].nomeDoPais],
 
-      disputaGrupoH: `${gruposTimes.timesNoGrupoH[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoH[1].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoH[2].nomeDoPais} vs ${gruposTimes.timesNoGrupoH[3].nomeDoPais}`,
+      disputaGrupoH: [gruposTimes.timesNoGrupoH[0].nomeDoPais, gruposTimes.timesNoGrupoH[1].nomeDoPais,
+                      gruposTimes.timesNoGrupoH[2].nomeDoPais, gruposTimes.timesNoGrupoH[3].nomeDoPais],
     }
 
     const day2: IMatchDay = {
-      disputaGrupoA: `${gruposTimes.timesNoGrupoA[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoA[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoA[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoA[1].nomeDoPais}`,
+      disputaGrupoA: [gruposTimes.timesNoGrupoA[0].nomeDoPais, gruposTimes.timesNoGrupoA[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoA[3].nomeDoPais, gruposTimes.timesNoGrupoA[1].nomeDoPais],
                       
-      disputaGrupoB: `${gruposTimes.timesNoGrupoB[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoB[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoB[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoB[1].nomeDoPais}`,
+      disputaGrupoB: [gruposTimes.timesNoGrupoB[0].nomeDoPais, gruposTimes.timesNoGrupoB[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoB[3].nomeDoPais, gruposTimes.timesNoGrupoB[1].nomeDoPais],
 
-      disputaGrupoC: `${gruposTimes.timesNoGrupoC[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoC[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoC[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoC[1].nomeDoPais}`,
+      disputaGrupoC: [gruposTimes.timesNoGrupoC[0].nomeDoPais, gruposTimes.timesNoGrupoC[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoC[3].nomeDoPais, gruposTimes.timesNoGrupoC[1].nomeDoPais],
 
-      disputaGrupoD: `${gruposTimes.timesNoGrupoD[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoD[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoD[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoD[1].nomeDoPais}`,
+      disputaGrupoD: [gruposTimes.timesNoGrupoD[0].nomeDoPais, gruposTimes.timesNoGrupoD[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoD[3].nomeDoPais, gruposTimes.timesNoGrupoD[1].nomeDoPais],
                       
-      disputaGrupoE: `${gruposTimes.timesNoGrupoE[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoE[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoE[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoE[1].nomeDoPais}`,
+      disputaGrupoE: [gruposTimes.timesNoGrupoE[0].nomeDoPais, gruposTimes.timesNoGrupoE[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoE[3].nomeDoPais, gruposTimes.timesNoGrupoE[1].nomeDoPais],
 
-      disputaGrupoF: `${gruposTimes.timesNoGrupoF[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoF[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoF[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoF[1].nomeDoPais}`,
+      disputaGrupoF: [gruposTimes.timesNoGrupoF[0].nomeDoPais, gruposTimes.timesNoGrupoF[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoF[3].nomeDoPais, gruposTimes.timesNoGrupoF[1].nomeDoPais],
 
-      disputaGrupoG: `${gruposTimes.timesNoGrupoG[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoG[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoG[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoG[1].nomeDoPais}`,
+      disputaGrupoG: [gruposTimes.timesNoGrupoG[0].nomeDoPais, gruposTimes.timesNoGrupoG[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoG[3].nomeDoPais, gruposTimes.timesNoGrupoG[1].nomeDoPais],
 
-      disputaGrupoH: `${gruposTimes.timesNoGrupoH[0].nomeDoPais} vs ${gruposTimes.timesNoGrupoH[2].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoH[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoH[1].nomeDoPais}`,
+      disputaGrupoH: [gruposTimes.timesNoGrupoH[0].nomeDoPais, gruposTimes.timesNoGrupoH[2].nomeDoPais,
+                      gruposTimes.timesNoGrupoH[3].nomeDoPais, gruposTimes.timesNoGrupoH[1].nomeDoPais],
     }
 
     const day3: IMatchDay = {
-      disputaGrupoA: `${gruposTimes.timesNoGrupoA[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoA[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoA[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoA[2].nomeDoPais}`,
+      disputaGrupoA: [gruposTimes.timesNoGrupoA[3].nomeDoPais, gruposTimes.timesNoGrupoA[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoA[1].nomeDoPais, gruposTimes.timesNoGrupoA[2].nomeDoPais],
                       
-      disputaGrupoB: `${gruposTimes.timesNoGrupoB[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoB[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoB[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoB[2].nomeDoPais}`,
+      disputaGrupoB: [gruposTimes.timesNoGrupoB[3].nomeDoPais, gruposTimes.timesNoGrupoB[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoB[1].nomeDoPais, gruposTimes.timesNoGrupoB[2].nomeDoPais],
 
-      disputaGrupoC: `${gruposTimes.timesNoGrupoC[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoC[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoC[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoC[2].nomeDoPais}`,
+      disputaGrupoC: [gruposTimes.timesNoGrupoC[3].nomeDoPais, gruposTimes.timesNoGrupoC[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoC[1].nomeDoPais, gruposTimes.timesNoGrupoC[2].nomeDoPais],
 
-      disputaGrupoD: `${gruposTimes.timesNoGrupoD[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoD[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoD[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoD[2].nomeDoPais}`,
+      disputaGrupoD: [gruposTimes.timesNoGrupoD[3].nomeDoPais, gruposTimes.timesNoGrupoD[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoD[1].nomeDoPais, gruposTimes.timesNoGrupoD[2].nomeDoPais],
                       
-      disputaGrupoE: `${gruposTimes.timesNoGrupoE[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoE[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoE[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoE[2].nomeDoPais}`,
+      disputaGrupoE: [gruposTimes.timesNoGrupoE[3].nomeDoPais, gruposTimes.timesNoGrupoE[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoE[1].nomeDoPais, gruposTimes.timesNoGrupoE[2].nomeDoPais],
 
-      disputaGrupoF: `${gruposTimes.timesNoGrupoF[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoF[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoF[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoF[2].nomeDoPais}`,
+      disputaGrupoF: [gruposTimes.timesNoGrupoF[3].nomeDoPais, gruposTimes.timesNoGrupoF[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoF[1].nomeDoPais, gruposTimes.timesNoGrupoF[2].nomeDoPais],
 
-      disputaGrupoG: `${gruposTimes.timesNoGrupoG[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoG[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoG[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoG[2].nomeDoPais}`,
+      disputaGrupoG: [gruposTimes.timesNoGrupoG[3].nomeDoPais, gruposTimes.timesNoGrupoG[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoG[1].nomeDoPais, gruposTimes.timesNoGrupoG[2].nomeDoPais],
 
-      disputaGrupoH: `${gruposTimes.timesNoGrupoH[3].nomeDoPais} vs ${gruposTimes.timesNoGrupoH[0].nomeDoPais}\n
-                      ${gruposTimes.timesNoGrupoH[1].nomeDoPais} vs ${gruposTimes.timesNoGrupoH[2].nomeDoPais}`,
+      disputaGrupoH: [gruposTimes.timesNoGrupoH[3].nomeDoPais, gruposTimes.timesNoGrupoH[0].nomeDoPais,
+                      gruposTimes.timesNoGrupoH[1].nomeDoPais, gruposTimes.timesNoGrupoH[2].nomeDoPais],
     }
 
     return {
@@ -208,5 +210,43 @@ export class CopaController {
       day2,
       day3,
     }
+  }
+
+  // @TODO OTIMIZAR ESSE METODO COM PROMISE.ALL
+  public async decidirVencedor(): Promise<Array<string>> {
+    const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
+
+    const grupoTime: IGruposTimes = this.timesEmCadaGrupo(times);
+
+    const vendoresDia1 = this.matchDays(grupoTime)
+
+    const disputaGrupos = Object.keys(vendoresDia1.day1)
+
+    const timesVencedoresMatchDay1 = []
+
+    for (let i = 0; i <= disputaGrupos.length; i++) {
+        // @ts-ignore
+        timesVencedoresMatchDay1.push(utils.timeVencedor(vendoresDia1.day1[disputaGrupos[i]]))
+    }
+    // const timesVencedorMatch1GrupoB = utils.timeVencedor(vendoresDia1.day1.disputaGrupoB)
+    // const timesVencedorMatch1GrupoC = utils.timeVencedor(vendoresDia1.day1.disputaGrupoC)
+    // const timesVencedorMatch1GrupoD = utils.timeVencedor(vendoresDia1.day1.disputaGrupoD)
+    // const timesVencedorMatch1GrupoE = utils.timeVencedor(vendoresDia1.day1.disputaGrupoE)
+    // const timesVencedorMatch1GrupoF = utils.timeVencedor(vendoresDia1.day1.disputaGrupoF)
+    // const timesVencedorMatch1GrupoG = utils.timeVencedor(vendoresDia1.day1.disputaGrupoG)
+    // const timesVencedorMatch1GrupoH = utils.timeVencedor(vendoresDia1.day1.disputaGrupoH)
+
+    // timesVencedoresMatchDay1.push(
+    //   timesVencedorMatch1GrupoA, 
+    //   timesVencedorMatch1GrupoB,
+    //   timesVencedorMatch1GrupoC,
+    //   timesVencedorMatch1GrupoD,
+    //   timesVencedorMatch1GrupoE,
+    //   timesVencedorMatch1GrupoF,
+    //   timesVencedorMatch1GrupoG,
+    //   timesVencedorMatch1GrupoH,
+    // )
+
+    return timesVencedoresMatchDay1;
   }
 }
