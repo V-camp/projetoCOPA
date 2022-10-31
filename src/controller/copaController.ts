@@ -7,6 +7,7 @@ import { dadosTimePerdedor } from "model/interfaces/TimePerdedor"
 import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
+import { ITimesVencedoresMatchDay } from 'model/interfaces/TimesVencedoresMatchDay';
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -213,22 +214,44 @@ export class CopaController {
   }
 
   // @TODO OTIMIZAR ESSE METODO COM PROMISE.ALL
-  public async decidirVencedor(): Promise<Array<string>> {
+  public async decidirVencedor(): Promise<ITimesVencedoresMatchDay> {
     const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
     const grupoTime: IGruposTimes = this.timesEmCadaGrupo(times);
 
-    const vendoresDia1 = this.matchDays(grupoTime)
+    const vendoresDia = this.matchDays(grupoTime)
 
-    const disputaGrupos = Object.keys(vendoresDia1.day1)
+    const disputaGruposDia1 = Object.keys(vendoresDia.day1)
 
     const timesVencedoresMatchDay1 = []
 
-    for (let i = 0; i <= disputaGrupos.length; i++) {
+    for (let i = 0; i <= disputaGruposDia1.length; i++) {
         // @ts-ignore
-        timesVencedoresMatchDay1.push(utils.timeVencedor(vendoresDia1.day1[disputaGrupos[i]]))
+        timesVencedoresMatchDay1.push(utils.timeVencedor(vendoresDia.day1[disputaGruposDia1[i]]))
     }
 
-    return timesVencedoresMatchDay1;
+    const disputaGruposDia2 = Object.keys(vendoresDia.day2)
+
+    const timesVencedoresMatchDay2 = []
+
+    for (let i = 0; i <= disputaGruposDia2.length; i++) {
+        // @ts-ignore
+        timesVencedoresMatchDay2.push(utils.timeVencedor(vendoresDia.day2[disputaGruposDia2[i]]))
+    }
+
+    const disputaGruposDia3 = Object.keys(vendoresDia.day3)
+
+    const timesVencedoresMatchDay3 = []
+
+    for (let i = 0; i <= disputaGruposDia3.length; i++) {
+        // @ts-ignore
+        timesVencedoresMatchDay3.push(utils.timeVencedor(vendoresDia.day3[disputaGruposDia3[i]]))
+    }
+
+    return {
+      timesVencedoresMatchDay1,
+      timesVencedoresMatchDay2,
+      timesVencedoresMatchDay3,
+    }
   }
 }
