@@ -8,9 +8,9 @@ ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV
 
 # default to port 3000 for node, and 9229 and 9230 (tests) for debug
-ARG PORT=80
+ARG PORT=3000
 ENV PORT $PORT
-EXPOSE $PORT 9229 9230
+EXPOSE $PORT 3000
 
 # you'll likely want the latest npm, regardless of node version, for speed and fixes
 # but pin this version for the best stability
@@ -38,7 +38,7 @@ WORKDIR /opt/node_app/app
 COPY --chown=node:node . .
 
 
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY docker-entrypoint.sh #!/usr/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 

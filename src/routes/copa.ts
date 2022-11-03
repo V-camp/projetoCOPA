@@ -19,16 +19,16 @@ server.get(`${path}`, async (req: Request, res: Response) => {
     return res.send("Error!");
 })
 
-server.post(`${path}/cadastrarTime`, async (req: Request, res: Response) => {
+server.post(`${path}/cadastrar`, async (req: express.Request, res: express.Response) => {
 
-    const cadastroTime: IdadosTime = req.body
+    const cadastroTime = req.body
     const timeCadastrado = await copaController.cadastrarTime(cadastroTime)
 
     if (timeCadastrado) {
         return res.json(timeCadastrado);
     }
 
-    return res.send("Error! - Dados inseridos inválidos ou faltandes");
+    return res.json("Error! - Dados inseridos inválidos ou faltandes");
 })
 
 server.put(`${path}/atualizarTimes`, async (req: Request, res: Response) => {
@@ -75,6 +75,14 @@ server.get(`${path}/mostrarVencedorDoMatch`, async (req: Request, res: Response)
     }
 
     return res.send("Error!")
+})
+
+
+server.get(`${path}/teste`, async (req: Request, res: Response) => {
+
+    const teste = req.body
+
+    return res.json("pong")
 })
 
 export default server

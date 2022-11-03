@@ -13,12 +13,12 @@ services:
       - -c
       - |
         ../node_modules/typescript/bin/tsc -p .
-        ../node_modules/.bin/nodemon --inspect=0.0.0.0:8080 ./bin/www
+        ../node_modules/.bin/nodemon --inspect=0.0.0.0:3001 ./bin/www
+      - prisma generate 
     ports:
-      - "80:80"
-      - "8080:8080"
+      - "3000:3000"
+      - "3001:3001"
       - "9229:9229"
-      - "9230:9230"
     volumes:
       - .:/opt/node_app/app
       - ./package.json:/opt/node_app/package.json
@@ -42,7 +42,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "root@email.com"
       PGADMIN_DEFAULT_PASSWORD: "copa2022!"
     ports:
-      - "8008:80"
+      - "8080:8080"
     depends_on:
       - postgres
     networks:

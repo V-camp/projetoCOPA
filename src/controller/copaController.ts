@@ -1,5 +1,4 @@
 import { Utils } from './../util/utils';
-import { PrismaClient } from "@prisma/client"
 import { IdadosTime } from "../model/interfaces/DadosTime"
 import { dadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
 import { timesEmJogo } from "../model/enums/TimesEmJogo"
@@ -8,6 +7,7 @@ import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { ITimesVencedoresMatchDay } from 'model/interfaces/TimesVencedoresMatchDay';
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -25,7 +25,7 @@ export class CopaController {
 
   public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {
 
-    const timeJaExiste: IdadosTime = await prisma.times.findUnique({
+    const timeJaExiste: IdadosTime | null = await prisma.times.findUnique({
       where: {
         nomeDoPais: cadastroTime.nomeDoPais,
       },
@@ -50,11 +50,11 @@ export class CopaController {
     })
 
     if (!timeJaExiste && quantidadeDeTimes.length <= 32 && qtdNoGrupo < 4) {
-      const timeCriado: IdadosTime = await prisma.user.create({
+      const timeCriado: IdadosTime = await prisma.times.create({
         data: {
           nomeDoPais: cadastroTime.nomeDoPais,
-          qtdJogadores: cadastroTime.qtdDeJogadores,
-          treinadorDoTime: cadastroTime.treinador,
+          qtdDeJogadores: cadastroTime.qtdDeJogadores,
+          treinador: cadastroTime.treinador,
           capitao: cadastroTime.capitao,
           qtdDeCartaoVermelho: cadastroTime.qtdDeCartaoVermelho,
           qtdDeCartaoAmarelho: cadastroTime.qtdDeCartaoAmarelho,
@@ -70,35 +70,35 @@ export class CopaController {
   }
 
   public async atualizarTime(timeAtualizar: dadosAtualizarTime): Promise<object> {
-      const timeAtualizado = await prisma.post.update({
+      // const timeAtualizado = await prisma.times.update({
 
-          where: {
-            id: timeAtualizar.id,
-          },
-          data: {
-              name: timeAtualizar.nomeDoPais,
-              qtdJogadores: timeAtualizar.qtdDeJogadores,
-              liderDoTime: timeAtualizar.lider,
-              emJogo: timesEmJogo.EM_JOGO,
-          },
-        })
+      //     where: {
+      //       id: timeAtualizar.id,
+      //     },
+      //     data: {
+      //         name: timeAtualizar.nomeDoPais,
+      //         qtdJogadores: timeAtualizar.qtdDeJogadores,
+      //         liderDoTime: timeAtualizar.lider,
+      //         emJogo: timesEmJogo.EM_JOGO,
+      //     },
+      //   })
 
-      return { Time: "Brasil", etapa: "final" } || timeAtualizado
+      return { Time: "Brasil", etapa: "final" }
   }
 
   public async eliminarTime(timePerdedor: dadosTimePerdedor): Promise<object> {
 
-      const timeEliminado = await prisma.post.update({
+      // const timeEliminado = await prisma.times.update({
 
-          where: {
-            id: timePerdedor.id,
-          },
-          data: {
-              emJogo: timesEmJogo.ELIMINADO,
-          },
-        })
+      //     where: {
+      //       id: timePerdedor.id,
+      //     },
+      //     data: {
+      //         emJogo: timesEmJogo.ELIMINADO,
+      //     },
+      //   })
 
-    return { Time: "Eua", Venceu: false, Eliminado: true  } || timeEliminado
+    return { Time: "Eua", Venceu: false, Eliminado: true  }
   }
 
   public async listarAsDisputadasIniciais (): Promise<IDisputasMatchDays> {
