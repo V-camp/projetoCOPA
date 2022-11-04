@@ -42,7 +42,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "root@email.com"
       PGADMIN_DEFAULT_PASSWORD: "copa2022!"
     ports:
-      - "8080:8080"
+      - "8080:80"
     depends_on:
       - postgres
     networks:
