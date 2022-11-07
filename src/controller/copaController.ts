@@ -7,7 +7,7 @@ import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { ITimesVencedoresMatchDay } from 'model/interfaces/TimesVencedoresMatchDay';
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -16,23 +16,18 @@ export class CopaController {
     public async buscarTodosOsTimes(): Promise<Array<IdadosTime>> {
         const time = await prisma.times.findMany();
 
-        return [
-            // @ts-ignore
-            { Time: "Brasil" },
-            { Time: "EUA" }
-        ] || time
+        return time
     }
 
     public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {
 
-        const timeJaExiste: IdadosTime | null = await prisma.times.findUnique({
-            where: {
-                nomeDoPais: cadastroTime.nomeDoPais,
-            },
-        })
-
+        console.log("\n-------------------------------------------------------------", cadastroTime, "\n\n\n\n");
+        
+        
         const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
+        const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomeDoPais === cadastroTime.nomeDoPais)
+        
         const grupos: Array<string> = []
 
         quantidadeDeTimes.forEach((timeAtual: IdadosTime) => grupos.push(timeAtual.grupoPertencente))
@@ -52,14 +47,15 @@ export class CopaController {
         if (!timeJaExiste && quantidadeDeTimes.length <= 32 && qtdNoGrupo < 4) {
             const timeCriado: IdadosTime = await prisma.times.create({
                 data: {
-                    nomeDoPais: cadastroTime.nomeDoPais,
-                    qtdDeJogadores: cadastroTime.qtdDeJogadores,
+                    // @ts-ignore
+                    nomedopais: cadastroTime.nomeDoPais,
+                    qtddejogadores: cadastroTime.qtdDeJogadores,
                     treinador: cadastroTime.treinador,
                     capitao: cadastroTime.capitao,
-                    qtdDeCartaoVermelho: cadastroTime.qtdDeCartaoVermelho,
-                    qtdDeCartaoAmarelho: cadastroTime.qtdDeCartaoAmarelho,
-                    estaEmJogo: timesEmJogo.EM_JOGO,
-                    grupoPertencente: cadastroTime.grupoPertencente,
+                    qtddecartaovermelho: cadastroTime.qtdDeCartaoVermelho,
+                    qtddecartaoamarelho: cadastroTime.qtdDeCartaoAmarelho,
+                    estaemjogo: timesEmJogo.EM_JOGO,
+                    grupopertencente: cadastroTime.grupoPertencente,
                 },
             })
 
@@ -105,16 +101,22 @@ export class CopaController {
 
         const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
+        console.log("\n\n-------------------------", times, "\n\n\n");
+
         const grupoTime: IGruposTimes = this.timesEmCadaGrupo(times);
+        console.log("\n\n-------------------------", grupoTime.timesNoGrupoA, "\n\n\n");
 
         const matchDay = this.matchDays(grupoTime);
 
         return matchDay;
     }
 
-    public timesEmCadaGrupo(times: Array<IdadosTime>) {
+    public timesEmCadaGrupo(times: Array<any>) {
         return {
-            timesNoGrupoA: times.filter((time: IdadosTime) => time.grupoPertencente === "A"),
+            timesNoGrupoA: times.filter((time) => {
+                console.log(time);
+                time.grupopertencente === "A"
+            }),
             timesNoGrupoB: times.filter((time: IdadosTime) => time.grupoPertencente === "B"),
             timesNoGrupoC: times.filter((time: IdadosTime) => time.grupoPertencente === "C"),
             timesNoGrupoD: times.filter((time: IdadosTime) => time.grupoPertencente === "D"),
@@ -213,7 +215,6 @@ export class CopaController {
         }
     }
 
-    // @TODO OTIMIZAR ESSE METODO COM PROMISE.ALL
     public async decidirVencedor(): Promise<ITimesVencedoresMatchDay> {
         const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
 

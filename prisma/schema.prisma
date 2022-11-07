@@ -9,14 +9,14 @@ datasource db {
 
 model times {
     id                  Int    @default(autoincrement()) @id
-    nomeDoPais          String @unique
-    qtdDeJogadores      Int
+    nomedopais          String @unique
+    qtddejogadores      Int
     treinador           String
     capitao             String
-    qtdDeCartaoVermelho Int
-    qtdDeCartaoAmarelho Int
-    estaEmJogo          String
-    grupoPertencente    String
+    qtddecartaovermelho Int
+    qtddecartaoamarelho Int
+    estaemjogo          String
+    grupopertencente    String
 }
 
 model teste {
