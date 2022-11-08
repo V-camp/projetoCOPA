@@ -19,6 +19,16 @@ model times {
     grupopertencente    String
 }
 
+model timesVencedoresDasPartidas {
+    id                  Int    @unique
+    nomedopais          String @unique
+    qtdgol              Int
+    qtdcartaovermelho   Int
+    qtdcartaoamarelo    Int
+    pontuacao           Int
+    tipodepartida       String
+}
+
 model teste {
     id                  Int    @default(autoincrement()) @id
     String              String 

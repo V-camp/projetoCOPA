@@ -1,11 +1,11 @@
 export interface IdadosTime {
     id?: number, 
-    nomeDoPais: string,
-    qtdDeJogadores: number,
+    nomedopais: string,
+    qtddejogadores: number,
     treinador: string,
     capitao: string,
-    qtdDeCartaoVermelho: number,
-    qtdDeCartaoAmarelho: number,
-    estaEmJogo: string,
-    grupoPertencente: string,
+    qtddecartaovermelho: number,
+    qtddecartaoamarelho: number,
+    estaemjogo: string,
+    grupopertencente: string,
 }

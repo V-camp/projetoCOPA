@@ -75,4 +75,29 @@ server.post(`${path}/mostrarVencedorMatch`, async (req: Request, res: Response) 
     }
 })
 
+server.get(`${path}/verVencedoresPartidas`, async (req: Request, res: Response) => {
+
+    const times = await copaController.buscarTimesVendores()
+
+    if (times) {
+        return res.json(times);
+    }
+
+    return res.send("Error");
+})
+
+server.post(`${path}/cadastrarTodosTimes`, async (req: Request, res: Response) => {
+    try {
+        const timeCadastrado = await copaController.cadastrarTodosTimes(req.body)
+    
+        if (timeCadastrado) {
+            return res.json(timeCadastrado);
+        }
+    
+        return res.json("Error! - Dados inseridos inválidos ou faltandes");
+    } catch (error) {
+        return res.json(error)
+    }
+})
+
 export default server

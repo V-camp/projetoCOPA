@@ -6,12 +6,11 @@ import { timesEmJogo } from "../model/enums/TimesEmJogo"
 import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
-import { PrismaClient } from "@prisma/client"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
-const utils = new Utils()
 
 export class CopaController {
     public async buscarTodosOsTimes(): Promise<Array<IdadosTime>> {
@@ -20,24 +19,22 @@ export class CopaController {
         return time
     }
 
-    public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {
-
-        
+    public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {        
         const quantidadeDeTimes: Array<any> = await this.buscarTodosOsTimes()
 
-        const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroTime.nomeDoPais)
+        const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroTime.nomedopais)
         
         const grupos: Array<string> = []
 
-        quantidadeDeTimes.forEach((timeAtual: IdadosTime) => grupos.push(timeAtual.grupoPertencente))
+        quantidadeDeTimes.forEach((timeAtual: IdadosTime) => grupos.push(timeAtual.grupopertencente))
 
         let qtdNoGrupo = 0;
         const gruposPossiveis = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
         grupos.forEach((grupoAtual: string, index: number) => {
             if (
-                grupoAtual === cadastroTime.grupoPertencente 
-                    && cadastroTime.grupoPertencente === gruposPossiveis[index]
+                grupoAtual === cadastroTime.grupopertencente 
+                    && cadastroTime.grupopertencente === gruposPossiveis[index]
             ) {
                 qtdNoGrupo += 1;
             }
@@ -46,15 +43,14 @@ export class CopaController {
         if (!timeJaExiste && quantidadeDeTimes.length <= 32 && qtdNoGrupo < 4) {
             const timeCriado: IdadosTime = await prisma.times.create({
                 data: {
-                    // @ts-ignore
-                    nomedopais: cadastroTime.nomeDoPais,
-                    qtddejogadores: cadastroTime.qtdDeJogadores,
+                    nomedopais: cadastroTime.nomedopais,
+                    qtddejogadores: cadastroTime.qtddejogadores,
                     treinador: cadastroTime.treinador,
                     capitao: cadastroTime.capitao,
-                    qtddecartaovermelho: cadastroTime.qtdDeCartaoVermelho,
-                    qtddecartaoamarelho: cadastroTime.qtdDeCartaoAmarelho,
+                    qtddecartaovermelho: cadastroTime.qtddecartaovermelho,
+                    qtddecartaoamarelho: cadastroTime.qtddecartaoamarelho,
                     estaemjogo: timesEmJogo.EM_JOGO,
-                    grupopertencente: cadastroTime.grupoPertencente,
+                    grupopertencente: cadastroTime.grupopertencente,
                 },
             })
 
@@ -73,15 +69,14 @@ export class CopaController {
                 id: timeAtualizar.id,
             },
             data: {
-                // @ts-ignore
-                nomedopais: timeAtualizar.nomedopais || timeExistente?.nomeDoPais,
-                qtddejogadores: timeAtualizar.qtddejogadores || timeExistente?.qtdDeJogadores,
+                nomedopais: timeAtualizar.nomedopais || timeExistente?.nomedopais,
+                qtddejogadores: timeAtualizar.qtddejogadores || timeExistente?.qtddejogadores,
                 treinador: timeAtualizar.treinador || timeExistente?.treinador,
                 capitao: timeAtualizar.capitao || timeExistente?.capitao,
-                qtddecartaovermelho: timeAtualizar.qtddecartaovermelho || timeExistente?.qtdDeCartaoVermelho,
-                qtddecartaoamarelho: timeAtualizar.qtddecartaoamarelho || timeExistente?.qtdDeCartaoAmarelho,
-                estaemjogo: timeAtualizar.estaEmJogo || timeExistente?.estaEmJogo,
-                grupopertencente: timeAtualizar.grupopertencente || timeExistente?.grupoPertencente,
+                qtddecartaovermelho: timeAtualizar.qtddecartaovermelho || timeExistente?.qtddecartaovermelho,
+                qtddecartaoamarelho: timeAtualizar.qtddecartaoamarelho || timeExistente?.qtddecartaoamarelho,
+                estaemjogo: timeAtualizar.estaemjogo || timeExistente?.estaemjogo,
+                grupopertencente: timeAtualizar.grupopertencente || timeExistente?.grupopertencente,
             },
           })
 
@@ -205,53 +200,107 @@ export class CopaController {
         let vendoresDoMatchDay;
 
         if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY1) {
-            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas.partidas)
+            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas)
         }
 
         else if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY2) {
-            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas.partidas)
+            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas)
         }
 
         else if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY3) {
-            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas.partidas)
+            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas)
         }
 
         return vendoresDoMatchDay
     }
 
-    private vencedoresMatchDay(partidas: IPartidasGerais): Array<any> {
+    private async vencedoresMatchDay(inputPartidas: IInputMatchEFinais): Promise<any> {
         const vencedoresDasPartidas = [];
 
-        const chavesDasPartidas = Object.keys(partidas);
+        const chavesDasPartidas = Object.keys(inputPartidas.partidas);
+
+        const timeVencedoresJaSalvosNoDB = await prisma.timesVencedoresDasPartidas.findMany()
 
         for (let i = 0; i < chavesDasPartidas.length; i++) {
             // @ts-ignore
-            let partidaAtual = partidas[chavesDasPartidas[i]];
+            let partidaAtual = inputPartidas.partidas[chavesDasPartidas[i]];
 
             if (partidaAtual[1].qtdGol > partidaAtual[0].qtdGol) {
-                vencedoresDasPartidas.push(partidaAtual[1]);
-            } else if (partidaAtual[1].qtdGol === partidaAtual[0].qtdGol) {
-
-                if (partidaAtual[1].qtdCartaoVermelho > partidaAtual[0].qtdCartaoVermelho) {
-                    vencedoresDasPartidas.push(partidaAtual[0]);
-                } else if (partidaAtual[1].qtdCartaoVermelho === partidaAtual[0].qtdCartaoVermelho) {
-
-                    if (partidaAtual[1].qtdCartaoAmarelo > partidaAtual[0].qtdCartaoAmarelo) {
-                        vencedoresDasPartidas.push(partidaAtual[0]);
-                    } else {
-                        vencedoresDasPartidas.push(partidaAtual[1]);
-                    }
-
-                } else {
-                    vencedoresDasPartidas.push(partidaAtual[1]);
+                let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[1].idPais)
+                
+                partidaAtual[1] = { 
+                    ...partidaAtual[1], 
+                    pontuacao: historicoDoTime ? historicoDoTime.pontuacao + 3 : 3
                 }
 
+                vencedoresDasPartidas.push(partidaAtual[1]);
+            } else if (partidaAtual[1].qtdGol === partidaAtual[0].qtdGol) {
+                partidaAtual[0] = { ...partidaAtual[0], pontuacao: 1 }
+                partidaAtual[1] = { ...partidaAtual[1], pontuacao: 1 }
             } else {
+                partidaAtual[0] = { ...partidaAtual[0], pontuacao: 3 }
                 vencedoresDasPartidas.push(partidaAtual[0]);
             }
         }
 
-        console.log("vencedoresDasPartidas", vencedoresDasPartidas);
-        return vencedoresDasPartidas
+        return this.salvarTimeVencedorNoDB(vencedoresDasPartidas, inputPartidas.tipoDeQualificacao);
+    }
+
+    private async salvarTimeVencedorNoDB(vencedoresDasPartidas: any[], tipoDePartida: string): Promise<any> {
+        try {
+            const times = await this.buscarTodosOsTimes()
+        
+            for (let i = 0; i < vencedoresDasPartidas.length; i++) {
+                const dadosTimesVencedors = times.find((time) => time.id === vencedoresDasPartidas[i].idPais)
+                
+                await prisma.timesVencedoresDasPartidas.create({
+                    data: {
+                        id: vencedoresDasPartidas[i].idPais,
+                        // @ts-ignore
+                        nomedopais: dadosTimesVencedors.nomedopais,
+                        qtdgol: vencedoresDasPartidas[i].qtdGol,
+                        qtdcartaovermelho: vencedoresDasPartidas[i].qtdCartaoVermelho,
+                        qtdcartaoamarelo: vencedoresDasPartidas[i].qtdCartaoAmarelo,
+                        pontuacao: vencedoresDasPartidas[i].pontuacao,
+                        tipodepartida: tipoDePartida
+                    },
+                });
+            }
+
+            return "Salvo!"
+        } catch (error) {
+            return error
+        }
+    }
+
+    public async buscarTimesVendores(): Promise<Array<any>> {
+        const time = await prisma.timesVencedoresDasPartidas.findMany();
+
+        return time
+    }
+
+
+    public async cadastrarTodosTimes(cadastroDosTime: Array<any>): Promise<any> {
+        try {
+            for (let i = 0; i < cadastroDosTime.length; i++) {
+                await prisma.times.create({
+                    data: {
+                        id: cadastroDosTime[i].id,
+                        nomedopais: cadastroDosTime[i].nomedopais,
+                        qtddejogadores: cadastroDosTime[i].qtddejogadores,
+                        treinador: cadastroDosTime[i].treinador,
+                        capitao: cadastroDosTime[i].capitao,
+                        qtddecartaovermelho: cadastroDosTime[i].qtddecartaovermelho,
+                        qtddecartaoamarelho: cadastroDosTime[i].qtddecartaoamarelho,
+                        estaemjogo: timesEmJogo.EM_JOGO,
+                        grupopertencente: cadastroDosTime[i].grupopertencente,
+                    },
+                })
+            }
+            
+            return "times criados"
+        } catch(error) {
+            return error
+        }           
     }
 }

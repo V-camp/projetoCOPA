@@ -6,6 +6,6 @@ export interface IdadosAtualizarTime {
     capitao: string,
     qtddecartaovermelho: number,
     qtddecartaoamarelho: number,
-    estaEmJogo: string,
+    estaemjogo: string,
     grupopertencente: string,
 }
