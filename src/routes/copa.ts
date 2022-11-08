@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express"
+import express, { Request, response, Response } from "express"
 import { IdadosTime } from "model/interfaces/DadosTime"
 import { CopaController } from "../controller/copaController"
 
@@ -34,27 +34,17 @@ server.post(`${path}/cadastrar`, async (req: Request, res: Response) => {
 })
 
 server.put(`${path}/atualizarTimes`, async (req: Request, res: Response) => {
-
-    const time = req.body
-    const timeAtualizado = await copaController.atualizarTime(time)
-
-    if (timeAtualizado) {
-        return res.json(timeAtualizado);
+    try {
+        const timeAtualizado = await copaController.atualizarTime(req.body)
+    
+        if (timeAtualizado) {
+            return res.json(timeAtualizado);
+        }
+    
+        return res.send("Error!");
+    } catch(error) {
+        return res.send(error)
     }
-
-    return res.send("Error!");
-})
-
-server.post(`${path}/eliminarTime`, async (req: Request, res: Response) => {
-
-    const time = req.body
-    const timePerdedor = await copaController.eliminarTime(time)
-
-    if (timePerdedor) {
-        return res.json(timePerdedor);
-    }
-
-    return res.send("Error!")
 })
 
 server.get(`${path}/listarAsDisputadasIniciais`, async (req: Request, res: Response) => {
@@ -71,15 +61,18 @@ server.get(`${path}/listarAsDisputadasIniciais`, async (req: Request, res: Respo
     }
 })
 
-server.get(`${path}/mostrarVencedorDoMatch`, async (req: Request, res: Response) => {
+server.post(`${path}/mostrarVencedorMatch`, async (req: Request, res: Response) => {
+    try {
+        const disputadasIniciais = await copaController.decidirVencedor(req.body)
 
-    const disputadasIniciais = await copaController.decidirVencedor()
+        if (disputadasIniciais) {
+            return res.json(disputadasIniciais);
+        }
 
-    if (disputadasIniciais) {
-        return res.json(disputadasIniciais);
+        return res.send("Error!")
+    } catch(error) {
+        return response.json(error)
     }
-
-    return res.send("Error!")
 })
 
 export default server

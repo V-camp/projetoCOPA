@@ -1,9 +1,11 @@
-import { timesEmJogo } from "model/enums/TimesEmJogo";
-
-export interface dadosAtualizarTime { 
-    id: string,
-    nomeDoPais: string,
-    qtdDeJogadores: number,
-    lider: string,
-    emJogos: timesEmJogo,
+export interface IdadosAtualizarTime {
+    id?: number, 
+    nomedopais: string,
+    qtddejogadores: number,
+    treinador: string,
+    capitao: string,
+    qtddecartaovermelho: number,
+    qtddecartaoamarelho: number,
+    estaEmJogo: string,
+    grupopertencente: string,
 }

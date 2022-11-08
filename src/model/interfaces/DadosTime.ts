@@ -1,4 +1,5 @@
-export interface IdadosTime { 
+export interface IdadosTime {
+    id?: number, 
     nomeDoPais: string,
     qtdDeJogadores: number,
     treinador: string,

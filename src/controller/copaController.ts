@@ -1,13 +1,12 @@
 import { Utils } from './../util/utils';
 import { IdadosTime } from "../model/interfaces/DadosTime"
-import { dadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
+import { IdadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
 import { timesEmJogo } from "../model/enums/TimesEmJogo"
-import { dadosTimePerdedor } from "model/interfaces/TimePerdedor"
 import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
-import { ITimesVencedoresMatchDay } from 'model/interfaces/TimesVencedoresMatchDay';
 import { PrismaClient } from "@prisma/client"
+import { IInputMatchEFinais } from 'model/interfaces/InputMatchEFinais';
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -21,12 +20,10 @@ export class CopaController {
 
     public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {
 
-        console.log("\n-------------------------------------------------------------", cadastroTime, "\n\n\n\n");
         
-        
-        const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
+        const quantidadeDeTimes: Array<any> = await this.buscarTodosOsTimes()
 
-        const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomeDoPais === cadastroTime.nomeDoPais)
+        const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroTime.nomeDoPais)
         
         const grupos: Array<string> = []
 
@@ -62,197 +59,150 @@ export class CopaController {
             return timeCriado
         }
 
-        throw "Error rever condições..."
+        throw "Error rever informações..."
     }
 
-    public async atualizarTime(timeAtualizar: dadosAtualizarTime): Promise<object> {
-        // const timeAtualizado = await prisma.times.update({
+    public async atualizarTime(timeAtualizar: IdadosAtualizarTime): Promise<object> {     
+        const times = await this.buscarTodosOsTimes()
+        const timeExistente = times.find((timeAntesDeAtualizar) => timeAntesDeAtualizar.id === timeAtualizar.id)
 
-        //     where: {
-        //       id: timeAtualizar.id,
-        //     },
-        //     data: {
-        //         name: timeAtualizar.nomeDoPais,
-        //         qtdJogadores: timeAtualizar.qtdDeJogadores,
-        //         liderDoTime: timeAtualizar.lider,
-        //         emJogo: timesEmJogo.EM_JOGO,
-        //     },
-        //   })
+        const timeAtualizado = await prisma.times.update({
+            where: {
+                id: timeAtualizar.id,
+            },
+            data: {
+                // @ts-ignore
+                nomedopais: timeAtualizar.nomedopais || timeExistente?.nomeDoPais,
+                qtddejogadores: timeAtualizar.qtddejogadores || timeExistente?.qtdDeJogadores,
+                treinador: timeAtualizar.treinador || timeExistente?.treinador,
+                capitao: timeAtualizar.capitao || timeExistente?.capitao,
+                qtddecartaovermelho: timeAtualizar.qtddecartaovermelho || timeExistente?.qtdDeCartaoVermelho,
+                qtddecartaoamarelho: timeAtualizar.qtddecartaoamarelho || timeExistente?.qtdDeCartaoAmarelho,
+                estaemjogo: timeAtualizar.estaEmJogo || timeExistente?.estaEmJogo,
+                grupopertencente: timeAtualizar.grupopertencente || timeExistente?.grupoPertencente,
+            },
+          })
 
-        return { Time: "Brasil", etapa: "final" }
-    }
-
-    public async eliminarTime(timePerdedor: dadosTimePerdedor): Promise<object> {
-
-        // const timeEliminado = await prisma.times.update({
-
-        //     where: {
-        //       id: timePerdedor.id,
-        //     },
-        //     data: {
-        //         emJogo: timesEmJogo.ELIMINADO,
-        //     },
-        //   })
-
-        return { Time: "Eua", Venceu: false, Eliminado: true  }
+        return timeAtualizado
     }
 
     public async listarAsDisputadasIniciais (): Promise<IDisputasMatchDays> {
 
         const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
-        console.log("\n\n-------------------------", times, "\n\n\n");
-
         const grupoTime: IGruposTimes = this.timesEmCadaGrupo(times);
-        console.log("\n\n-------------------------", grupoTime.timesNoGrupoA, "\n\n\n");
 
-        const matchDay = this.matchDays(grupoTime);
-
-        return matchDay;
+        return this.matchDays(grupoTime, times); 
     }
 
     public timesEmCadaGrupo(times: Array<any>) {
         return {
-            timesNoGrupoA: times.filter((time) => {
-                console.log(time);
-                time.grupopertencente === "A"
-            }),
-            timesNoGrupoB: times.filter((time: IdadosTime) => time.grupoPertencente === "B"),
-            timesNoGrupoC: times.filter((time: IdadosTime) => time.grupoPertencente === "C"),
-            timesNoGrupoD: times.filter((time: IdadosTime) => time.grupoPertencente === "D"),
-            timesNoGrupoE: times.filter((time: IdadosTime) => time.grupoPertencente === "E"),
-            timesNoGrupoF: times.filter((time: IdadosTime) => time.grupoPertencente === "F"),
-            timesNoGrupoG: times.filter((time: IdadosTime) => time.grupoPertencente === "G"),
-            timesNoGrupoH: times.filter((time: IdadosTime) => time.grupoPertencente === "H"),
+            timesNoGrupoA: times.filter((time) => time.grupopertencente === "A"),
+            timesNoGrupoB: times.filter((time) => time.grupopertencente === "B"),
+            timesNoGrupoC: times.filter((time) => time.grupopertencente === "C"),
+            timesNoGrupoD: times.filter((time) => time.grupopertencente === "D"),
+            timesNoGrupoE: times.filter((time) => time.grupopertencente === "E"),
+            timesNoGrupoF: times.filter((time) => time.grupopertencente === "F"),
+            timesNoGrupoG: times.filter((time) => time.grupopertencente === "G"),
+            timesNoGrupoH: times.filter((time) => time.grupopertencente === "H"),
         }
     }
 
-    // @TODO MELHORAR ESSE METODO!!!!!!!!!!!!!!!  
-    public matchDays(gruposTimes: IGruposTimes): IDisputasMatchDays {
+    public matchDays(gruposTimes: any, timesNoDB: Array<IdadosTime>): IDisputasMatchDays {
+        
+        if(timesNoDB.length  === 32) {
+            const day1: IMatchDay = {
+            disputaGrupoA:  [[gruposTimes.timesNoGrupoA[0].nomedopais, gruposTimes.timesNoGrupoA[1].nomedopais], 
+                [gruposTimes.timesNoGrupoA[2].nomedopais, gruposTimes.timesNoGrupoA[3].nomedopais]],
 
-        const day1: IMatchDay = {
-            disputaGrupoA:  [gruposTimes.timesNoGrupoA[0].nomeDoPais, gruposTimes.timesNoGrupoA[1].nomeDoPais, 
-                gruposTimes.timesNoGrupoA[2].nomeDoPais, gruposTimes.timesNoGrupoA[3].nomeDoPais],
+            disputaGrupoB: [[gruposTimes.timesNoGrupoB[0].nomedopais, gruposTimes.timesNoGrupoB[1].nomedopais],
+                [gruposTimes.timesNoGrupoB[2].nomedopais, gruposTimes.timesNoGrupoB[3].nomedopais]],
 
-            disputaGrupoB: [gruposTimes.timesNoGrupoB[0].nomeDoPais, gruposTimes.timesNoGrupoB[1].nomeDoPais,
-                gruposTimes.timesNoGrupoB[2].nomeDoPais, gruposTimes.timesNoGrupoB[3].nomeDoPais],
+            disputaGrupoC: [[gruposTimes.timesNoGrupoC[0].nomedopais, gruposTimes.timesNoGrupoC[1].nomedopais],
+                [gruposTimes.timesNoGrupoC[2].nomedopais, gruposTimes.timesNoGrupoC[3].nomedopais]],
 
-            disputaGrupoC: [gruposTimes.timesNoGrupoC[0].nomeDoPais, gruposTimes.timesNoGrupoC[1].nomeDoPais,
-                gruposTimes.timesNoGrupoC[2].nomeDoPais, gruposTimes.timesNoGrupoC[3].nomeDoPais],
+            disputaGrupoD: [[gruposTimes.timesNoGrupoD[0].nomedopais, gruposTimes.timesNoGrupoD[1].nomedopais],
+                [gruposTimes.timesNoGrupoD[2].nomedopais, gruposTimes.timesNoGrupoD[3].nomedopais]],
 
-            disputaGrupoD: [gruposTimes.timesNoGrupoD[0].nomeDoPais, gruposTimes.timesNoGrupoD[1].nomeDoPais,
-                gruposTimes.timesNoGrupoD[2].nomeDoPais, gruposTimes.timesNoGrupoD[3].nomeDoPais],
+            disputaGrupoE: [[gruposTimes.timesNoGrupoE[0].nomedopais, gruposTimes.timesNoGrupoE[1].nomedopais],
+                [gruposTimes.timesNoGrupoE[2].nomedopais, gruposTimes.timesNoGrupoE[3].nomedopais]],
 
-            disputaGrupoE: [gruposTimes.timesNoGrupoE[0].nomeDoPais, gruposTimes.timesNoGrupoE[1].nomeDoPais,
-                gruposTimes.timesNoGrupoE[2].nomeDoPais, gruposTimes.timesNoGrupoE[3].nomeDoPais],
+            disputaGrupoF: [[gruposTimes.timesNoGrupoF[0].nomedopais, gruposTimes.timesNoGrupoF[1].nomedopais],
+                [gruposTimes.timesNoGrupoF[2].nomedopais, gruposTimes.timesNoGrupoF[3].nomedopais]],
 
-            disputaGrupoF: [gruposTimes.timesNoGrupoF[0].nomeDoPais, gruposTimes.timesNoGrupoF[1].nomeDoPais,
-                gruposTimes.timesNoGrupoF[2].nomeDoPais, gruposTimes.timesNoGrupoF[3].nomeDoPais],
+            disputaGrupoG: [[gruposTimes.timesNoGrupoG[0].nomedopais, gruposTimes.timesNoGrupoG[1].nomedopais],
+                [gruposTimes.timesNoGrupoG[2].nomedopais, gruposTimes.timesNoGrupoG[3].nomedopais]],
 
-            disputaGrupoG: [gruposTimes.timesNoGrupoG[0].nomeDoPais, gruposTimes.timesNoGrupoG[1].nomeDoPais,
-                gruposTimes.timesNoGrupoG[2].nomeDoPais, gruposTimes.timesNoGrupoG[3].nomeDoPais],
+            disputaGrupoH: [[gruposTimes.timesNoGrupoH[0].nomedopais, gruposTimes.timesNoGrupoH[1].nomedopais],
+                [gruposTimes.timesNoGrupoH[2].nomedopais, gruposTimes.timesNoGrupoH[3].nomedopais]],
+            }
 
-            disputaGrupoH: [gruposTimes.timesNoGrupoH[0].nomeDoPais, gruposTimes.timesNoGrupoH[1].nomeDoPais,
-                gruposTimes.timesNoGrupoH[2].nomeDoPais, gruposTimes.timesNoGrupoH[3].nomeDoPais],
+            const day2: IMatchDay = {
+            disputaGrupoA: [[gruposTimes.timesNoGrupoA[0].nomedopais, gruposTimes.timesNoGrupoA[2].nomedopais],
+                [gruposTimes.timesNoGrupoA[3].nomedopais, gruposTimes.timesNoGrupoA[1].nomedopais]],
+
+            disputaGrupoB: [[gruposTimes.timesNoGrupoB[0].nomedopais, gruposTimes.timesNoGrupoB[2].nomedopais],
+                [gruposTimes.timesNoGrupoB[3].nomedopais, gruposTimes.timesNoGrupoB[1].nomedopais]],
+
+            disputaGrupoC: [[gruposTimes.timesNoGrupoC[0].nomedopais, gruposTimes.timesNoGrupoC[2].nomedopais],
+                [gruposTimes.timesNoGrupoC[3].nomedopais, gruposTimes.timesNoGrupoC[1].nomedopais]],
+
+            disputaGrupoD: [[gruposTimes.timesNoGrupoD[0].nomedopais, gruposTimes.timesNoGrupoD[2].nomedopais],
+                [gruposTimes.timesNoGrupoD[3].nomedopais, gruposTimes.timesNoGrupoD[1].nomedopais]],
+
+            disputaGrupoE: [[gruposTimes.timesNoGrupoE[0].nomedopais, gruposTimes.timesNoGrupoE[2].nomedopais],
+                [gruposTimes.timesNoGrupoE[3].nomedopais, gruposTimes.timesNoGrupoE[1].nomedopais]],
+
+            disputaGrupoF: [[gruposTimes.timesNoGrupoF[0].nomedopais, gruposTimes.timesNoGrupoF[2].nomedopais],
+                [gruposTimes.timesNoGrupoF[3].nomedopais, gruposTimes.timesNoGrupoF[1].nomedopais]],
+
+            disputaGrupoG: [[gruposTimes.timesNoGrupoG[0].nomedopais, gruposTimes.timesNoGrupoG[2].nomedopais],
+                [gruposTimes.timesNoGrupoG[3].nomedopais, gruposTimes.timesNoGrupoG[1].nomedopais]],
+
+            disputaGrupoH: [[gruposTimes.timesNoGrupoH[0].nomedopais, gruposTimes.timesNoGrupoH[2].nomedopais],
+                [gruposTimes.timesNoGrupoH[3].nomedopais, gruposTimes.timesNoGrupoH[1].nomedopais]],
+            }
+
+            const day3: IMatchDay = {
+            disputaGrupoA: [[gruposTimes.timesNoGrupoA[3].nomedopais, gruposTimes.timesNoGrupoA[0].nomedopais],
+                [gruposTimes.timesNoGrupoA[1].nomedopais, gruposTimes.timesNoGrupoA[2].nomedopais]],
+
+            disputaGrupoB: [[gruposTimes.timesNoGrupoB[3].nomedopais, gruposTimes.timesNoGrupoB[0].nomedopais],
+                [gruposTimes.timesNoGrupoB[1].nomedopais, gruposTimes.timesNoGrupoB[2].nomedopais]],
+
+            disputaGrupoC: [[gruposTimes.timesNoGrupoC[3].nomedopais, gruposTimes.timesNoGrupoC[0].nomedopais],
+                [gruposTimes.timesNoGrupoC[1].nomedopais, gruposTimes.timesNoGrupoC[2].nomedopais]],
+
+            disputaGrupoD: [[gruposTimes.timesNoGrupoD[3].nomedopais, gruposTimes.timesNoGrupoD[0].nomedopais],
+                [gruposTimes.timesNoGrupoD[1].nomedopais, gruposTimes.timesNoGrupoD[2].nomedopais]],
+
+            disputaGrupoE: [[gruposTimes.timesNoGrupoE[3].nomedopais, gruposTimes.timesNoGrupoE[0].nomedopais],
+                [gruposTimes.timesNoGrupoE[1].nomedopais, gruposTimes.timesNoGrupoE[2].nomedopais]],
+
+            disputaGrupoF: [[gruposTimes.timesNoGrupoF[3].nomedopais, gruposTimes.timesNoGrupoF[0].nomedopais],
+                [gruposTimes.timesNoGrupoF[1].nomedopais, gruposTimes.timesNoGrupoF[2].nomedopais]],
+
+            disputaGrupoG: [[gruposTimes.timesNoGrupoG[3].nomedopais, gruposTimes.timesNoGrupoG[0].nomedopais],
+                [gruposTimes.timesNoGrupoG[1].nomedopais, gruposTimes.timesNoGrupoG[2].nomedopais]],
+
+            disputaGrupoH: [[gruposTimes.timesNoGrupoH[3].nomedopais, gruposTimes.timesNoGrupoH[0].nomedopais],
+                [gruposTimes.timesNoGrupoH[1].nomedopais, gruposTimes.timesNoGrupoH[2].nomedopais]],
+            }
+
+            return {
+                day1,
+                day2,
+                day3,
+            }
         }
 
-        const day2: IMatchDay = {
-            disputaGrupoA: [gruposTimes.timesNoGrupoA[0].nomeDoPais, gruposTimes.timesNoGrupoA[2].nomeDoPais,
-                gruposTimes.timesNoGrupoA[3].nomeDoPais, gruposTimes.timesNoGrupoA[1].nomeDoPais],
-
-            disputaGrupoB: [gruposTimes.timesNoGrupoB[0].nomeDoPais, gruposTimes.timesNoGrupoB[2].nomeDoPais,
-                gruposTimes.timesNoGrupoB[3].nomeDoPais, gruposTimes.timesNoGrupoB[1].nomeDoPais],
-
-            disputaGrupoC: [gruposTimes.timesNoGrupoC[0].nomeDoPais, gruposTimes.timesNoGrupoC[2].nomeDoPais,
-                gruposTimes.timesNoGrupoC[3].nomeDoPais, gruposTimes.timesNoGrupoC[1].nomeDoPais],
-
-            disputaGrupoD: [gruposTimes.timesNoGrupoD[0].nomeDoPais, gruposTimes.timesNoGrupoD[2].nomeDoPais,
-                gruposTimes.timesNoGrupoD[3].nomeDoPais, gruposTimes.timesNoGrupoD[1].nomeDoPais],
-
-            disputaGrupoE: [gruposTimes.timesNoGrupoE[0].nomeDoPais, gruposTimes.timesNoGrupoE[2].nomeDoPais,
-                gruposTimes.timesNoGrupoE[3].nomeDoPais, gruposTimes.timesNoGrupoE[1].nomeDoPais],
-
-            disputaGrupoF: [gruposTimes.timesNoGrupoF[0].nomeDoPais, gruposTimes.timesNoGrupoF[2].nomeDoPais,
-                gruposTimes.timesNoGrupoF[3].nomeDoPais, gruposTimes.timesNoGrupoF[1].nomeDoPais],
-
-            disputaGrupoG: [gruposTimes.timesNoGrupoG[0].nomeDoPais, gruposTimes.timesNoGrupoG[2].nomeDoPais,
-                gruposTimes.timesNoGrupoG[3].nomeDoPais, gruposTimes.timesNoGrupoG[1].nomeDoPais],
-
-            disputaGrupoH: [gruposTimes.timesNoGrupoH[0].nomeDoPais, gruposTimes.timesNoGrupoH[2].nomeDoPais,
-                gruposTimes.timesNoGrupoH[3].nomeDoPais, gruposTimes.timesNoGrupoH[1].nomeDoPais],
-        }
-
-        const day3: IMatchDay = {
-            disputaGrupoA: [gruposTimes.timesNoGrupoA[3].nomeDoPais, gruposTimes.timesNoGrupoA[0].nomeDoPais,
-                gruposTimes.timesNoGrupoA[1].nomeDoPais, gruposTimes.timesNoGrupoA[2].nomeDoPais],
-
-            disputaGrupoB: [gruposTimes.timesNoGrupoB[3].nomeDoPais, gruposTimes.timesNoGrupoB[0].nomeDoPais,
-                gruposTimes.timesNoGrupoB[1].nomeDoPais, gruposTimes.timesNoGrupoB[2].nomeDoPais],
-
-            disputaGrupoC: [gruposTimes.timesNoGrupoC[3].nomeDoPais, gruposTimes.timesNoGrupoC[0].nomeDoPais,
-                gruposTimes.timesNoGrupoC[1].nomeDoPais, gruposTimes.timesNoGrupoC[2].nomeDoPais],
-
-            disputaGrupoD: [gruposTimes.timesNoGrupoD[3].nomeDoPais, gruposTimes.timesNoGrupoD[0].nomeDoPais,
-                gruposTimes.timesNoGrupoD[1].nomeDoPais, gruposTimes.timesNoGrupoD[2].nomeDoPais],
-
-            disputaGrupoE: [gruposTimes.timesNoGrupoE[3].nomeDoPais, gruposTimes.timesNoGrupoE[0].nomeDoPais,
-                gruposTimes.timesNoGrupoE[1].nomeDoPais, gruposTimes.timesNoGrupoE[2].nomeDoPais],
-
-            disputaGrupoF: [gruposTimes.timesNoGrupoF[3].nomeDoPais, gruposTimes.timesNoGrupoF[0].nomeDoPais,
-                gruposTimes.timesNoGrupoF[1].nomeDoPais, gruposTimes.timesNoGrupoF[2].nomeDoPais],
-
-            disputaGrupoG: [gruposTimes.timesNoGrupoG[3].nomeDoPais, gruposTimes.timesNoGrupoG[0].nomeDoPais,
-                gruposTimes.timesNoGrupoG[1].nomeDoPais, gruposTimes.timesNoGrupoG[2].nomeDoPais],
-
-            disputaGrupoH: [gruposTimes.timesNoGrupoH[3].nomeDoPais, gruposTimes.timesNoGrupoH[0].nomeDoPais,
-                gruposTimes.timesNoGrupoH[1].nomeDoPais, gruposTimes.timesNoGrupoH[2].nomeDoPais],
-        }
-
-        return {
-            day1,
-            day2,
-            day3,
-        }
+        throw "Times Insuficiente para montar o MatchDay";
     }
 
-    public async decidirVencedor(): Promise<ITimesVencedoresMatchDay> {
-        const times: Array<IdadosTime> = await this.buscarTodosOsTimes()
+    public async decidirVencedor(inputPartidas: IInputMatchEFinais): Promise<any> {
+        console.log(inputPartidas)
 
-        const grupoTime: IGruposTimes = this.timesEmCadaGrupo(times);
 
-        const vendoresDia = this.matchDays(grupoTime)
-
-        const disputaGruposDia1 = Object.keys(vendoresDia.day1)
-
-        const timesVencedoresMatchDay1 = []
-
-        for (let i = 0; i <= disputaGruposDia1.length; i++) {
-            // @ts-ignore
-            timesVencedoresMatchDay1.push(utils.timeVencedor(vendoresDia.day1[disputaGruposDia1[i]]))
-        }
-
-        const disputaGruposDia2 = Object.keys(vendoresDia.day2)
-
-        const timesVencedoresMatchDay2 = []
-
-        for (let i = 0; i <= disputaGruposDia2.length; i++) {
-            // @ts-ignore
-            timesVencedoresMatchDay2.push(utils.timeVencedor(vendoresDia.day2[disputaGruposDia2[i]]))
-        }
-
-        const disputaGruposDia3 = Object.keys(vendoresDia.day3)
-
-        const timesVencedoresMatchDay3 = []
-
-        for (let i = 0; i <= disputaGruposDia3.length; i++) {
-            // @ts-ignore
-            timesVencedoresMatchDay3.push(utils.timeVencedor(vendoresDia.day3[disputaGruposDia3[i]]))
-        }
-
-        return {
-            timesVencedoresMatchDay1,
-            timesVencedoresMatchDay2,
-            timesVencedoresMatchDay3,
-        }
+        return inputPartidas
     }
 }
