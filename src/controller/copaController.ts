@@ -235,10 +235,25 @@ export class CopaController {
 
                 vencedoresDasPartidas.push(partidaAtual[1]);
             } else if (partidaAtual[1].qtdGol === partidaAtual[0].qtdGol) {
-                partidaAtual[0] = { ...partidaAtual[0], pontuacao: 1 }
-                partidaAtual[1] = { ...partidaAtual[1], pontuacao: 1 }
+                let historicoDoTime1 = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[0].idPais)
+                partidaAtual[0] = { 
+                    ...partidaAtual[0], 
+                    pontuacao: historicoDoTime1 ? historicoDoTime1.pontuacao + 1 : 1
+                }
+
+                let historicoDoTime2 = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[1].idPais)
+                partidaAtual[1] = { 
+                    ...partidaAtual[1], 
+                    pontuacao: historicoDoTime2 ? historicoDoTime2.pontuacao + 1 : 1
+                }
             } else {
-                partidaAtual[0] = { ...partidaAtual[0], pontuacao: 3 }
+                let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[0].idPais)
+                
+                partidaAtual[0] = { 
+                    ...partidaAtual[0], 
+                    pontuacao: historicoDoTime ? historicoDoTime.pontuacao + 3 : 3
+                }
+
                 vencedoresDasPartidas.push(partidaAtual[0]);
             }
         }
