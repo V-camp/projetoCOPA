@@ -1,3 +1,4 @@
+import { IPartidasGerais } from './../model/interfaces/PartidasGerais';
 import { Utils } from './../util/utils';
 import { IdadosTime } from "../model/interfaces/DadosTime"
 import { IdadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
@@ -6,7 +7,8 @@ import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { PrismaClient } from "@prisma/client"
-import { IInputMatchEFinais } from 'model/interfaces/InputMatchEFinais';
+import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
+import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -200,9 +202,56 @@ export class CopaController {
     }
 
     public async decidirVencedor(inputPartidas: IInputMatchEFinais): Promise<any> {
-        console.log(inputPartidas)
+        let vendoresDoMatchDay;
 
+        if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY1) {
+            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas.partidas)
+        }
 
-        return inputPartidas
+        else if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY2) {
+            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas.partidas)
+        }
+
+        else if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY3) {
+            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas.partidas)
+        }
+
+        return vendoresDoMatchDay
+    }
+
+    private vencedoresMatchDay(partidas: IPartidasGerais): Array<any> {
+        const vencedoresDasPartidas = [];
+
+        const chavesDasPartidas = Object.keys(partidas);
+
+        for (let i = 0; i < chavesDasPartidas.length; i++) {
+            // @ts-ignore
+            let partidaAtual = partidas[chavesDasPartidas[i]];
+
+            if (partidaAtual[1].qtdGol > partidaAtual[0].qtdGol) {
+                vencedoresDasPartidas.push(partidaAtual[1]);
+            } else if (partidaAtual[1].qtdGol === partidaAtual[0].qtdGol) {
+
+                if (partidaAtual[1].qtdCartaoVermelho > partidaAtual[0].qtdCartaoVermelho) {
+                    vencedoresDasPartidas.push(partidaAtual[0]);
+                } else if (partidaAtual[1].qtdCartaoVermelho === partidaAtual[0].qtdCartaoVermelho) {
+
+                    if (partidaAtual[1].qtdCartaoAmarelo > partidaAtual[0].qtdCartaoAmarelo) {
+                        vencedoresDasPartidas.push(partidaAtual[0]);
+                    } else {
+                        vencedoresDasPartidas.push(partidaAtual[1]);
+                    }
+
+                } else {
+                    vencedoresDasPartidas.push(partidaAtual[1]);
+                }
+
+            } else {
+                vencedoresDasPartidas.push(partidaAtual[0]);
+            }
+        }
+
+        console.log("vencedoresDasPartidas", vencedoresDasPartidas);
+        return vencedoresDasPartidas
     }
 }
