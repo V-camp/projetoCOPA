@@ -185,19 +185,18 @@ export class CopaController {
 
     private async salvarTimeVencedorNoDB(vencedoresDasPartidas: Array<any>, tipoDePartida: string, timeVencedoresJaSalvosNoDB: any): Promise<string> {
         try {
+            console.log(vencedoresDasPartidas)
+            
             const times = await this.buscarTodosOsTimes()
         
             for (let i = 0; i < vencedoresDasPartidas.length; i++) {
                 const dadosTimesVencedors = times.find((time) => time.id === vencedoresDasPartidas[i].idPais)
-                console.log("dadosTimesVencedors -> ", dadosTimesVencedors);
                 
-                const timesVencedorExiste = timeVencedoresJaSalvosNoDB.find((time: any) => time.idPais === vencedoresDasPartidas[i].idPais)
-                console.log("timesVencedorExiste -> ", timesVencedorExiste);
+                const timesVencedorExiste = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === vencedoresDasPartidas[i].idPais)
                 
-                if (!timesVencedorExiste) {
+                if (timesVencedorExiste) {
                     console.log("ESTOU DENTRO DO IF");
-                    console.log("vencedoresDasPartidas[i]", vencedoresDasPartidas[i]);
-                    console.log("timesVencedorExiste[i]", timesVencedorExiste[i]);
+                    console.log("timesVencedorExiste -> ", timesVencedorExiste);
 
                     await prisma.timesVencedoresDasPartidas.update({
                         where: {
@@ -206,11 +205,11 @@ export class CopaController {
                         data: {
                             // @ts-ignore
                             nomedopais: dadosTimesVencedors.nomedopais,
-                            qtdgol: vencedoresDasPartidas[i].qtdGol || timesVencedorExiste[i].qtdGol,
-                            qtdcartaovermelho: vencedoresDasPartidas[i].qtdCartaoVermelho || timesVencedorExiste[i].qtdCartaoVermelho,
-                            qtdcartaoamarelo: vencedoresDasPartidas[i].qtdCartaoAmarelo || timesVencedorExiste[i].qtdCartaoAmarelo,
-                            pontuacao: vencedoresDasPartidas[i].pontuacao || timesVencedorExiste[i].pontuacao,
-                            tipodepartida: tipoDePartida || timesVencedorExiste[i].tipoDePartida
+                            qtdgol: vencedoresDasPartidas[i].qtdGol || timesVencedorExiste.qtdgol,
+                            qtdcartaovermelho: vencedoresDasPartidas[i].qtdCartaoVermelho || timesVencedorExiste.qtdcartaovermelho,
+                            qtdcartaoamarelo: vencedoresDasPartidas[i].qtdCartaoAmarelo || timesVencedorExiste.qtdcartaoamarelo,
+                            pontuacao: vencedoresDasPartidas[i].pontuacao || timesVencedorExiste.pontuacao,
+                            tipodepartida: tipoDePartida || timesVencedorExiste.tipodepartida
                         },
                     });
                 } else {
@@ -268,9 +267,9 @@ export class CopaController {
             const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
    
             for (let i = 0; i < cadastroDosTime.length; i++) {
-                const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroDosTime[i].nomedopais)
+                // const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroDosTime[i].nomedopais)
                 
-                if (!timeJaExiste) {
+                // if (!timeJaExiste) {
                     await prisma.times.create({
                         data: {
                             id: cadastroDosTime[i].id,
@@ -284,7 +283,7 @@ export class CopaController {
                             grupopertencente: cadastroDosTime[i].grupopertencente,
                         },
                     })
-                } 
+                // } 
             }
             
             return "times criados"
