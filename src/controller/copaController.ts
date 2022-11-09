@@ -4,13 +4,14 @@ import { IdadosTime } from "../model/interfaces/DadosTime"
 import { IdadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
 import { timesEmJogo } from "../model/enums/TimesEmJogo"
 import { IGruposTimes } from "model/interfaces/GruposDosTimes"
-import { IMatchDay } from "model/interfaces/MatchDay"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
 import { PrismaClient } from '@prisma/client'
+import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
 
 const prisma = new PrismaClient()
+const utils = new Utils()
 
 export class CopaController {
     public async buscarTodosOsTimes(): Promise<Array<IdadosTime>> {
@@ -20,7 +21,7 @@ export class CopaController {
     }
 
     public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {        
-        const quantidadeDeTimes: Array<any> = await this.buscarTodosOsTimes()
+        const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
         const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroTime.nomedopais)
         
@@ -92,7 +93,7 @@ export class CopaController {
         return this.matchDays(grupoTime, times); 
     }
 
-    public timesEmCadaGrupo(times: Array<any>) {
+    public timesEmCadaGrupo(times: Array<IdadosTime>): IGruposTimes {
         return {
             timesNoGrupoA: times.filter((time) => time.grupopertencente === "A"),
             timesNoGrupoB: times.filter((time) => time.grupopertencente === "B"),
@@ -105,98 +106,18 @@ export class CopaController {
         }
     }
 
-    public matchDays(gruposTimes: any, timesNoDB: Array<IdadosTime>): IDisputasMatchDays {
+    public matchDays(gruposTimes: IGruposTimes, timesNoDB: Array<IdadosTime>): IDisputasMatchDays {
         
         if(timesNoDB.length  === 32) {
-            const day1: IMatchDay = {
-            disputaGrupoA:  [[gruposTimes.timesNoGrupoA[0].nomedopais, gruposTimes.timesNoGrupoA[1].nomedopais], 
-                [gruposTimes.timesNoGrupoA[2].nomedopais, gruposTimes.timesNoGrupoA[3].nomedopais]],
-
-            disputaGrupoB: [[gruposTimes.timesNoGrupoB[0].nomedopais, gruposTimes.timesNoGrupoB[1].nomedopais],
-                [gruposTimes.timesNoGrupoB[2].nomedopais, gruposTimes.timesNoGrupoB[3].nomedopais]],
-
-            disputaGrupoC: [[gruposTimes.timesNoGrupoC[0].nomedopais, gruposTimes.timesNoGrupoC[1].nomedopais],
-                [gruposTimes.timesNoGrupoC[2].nomedopais, gruposTimes.timesNoGrupoC[3].nomedopais]],
-
-            disputaGrupoD: [[gruposTimes.timesNoGrupoD[0].nomedopais, gruposTimes.timesNoGrupoD[1].nomedopais],
-                [gruposTimes.timesNoGrupoD[2].nomedopais, gruposTimes.timesNoGrupoD[3].nomedopais]],
-
-            disputaGrupoE: [[gruposTimes.timesNoGrupoE[0].nomedopais, gruposTimes.timesNoGrupoE[1].nomedopais],
-                [gruposTimes.timesNoGrupoE[2].nomedopais, gruposTimes.timesNoGrupoE[3].nomedopais]],
-
-            disputaGrupoF: [[gruposTimes.timesNoGrupoF[0].nomedopais, gruposTimes.timesNoGrupoF[1].nomedopais],
-                [gruposTimes.timesNoGrupoF[2].nomedopais, gruposTimes.timesNoGrupoF[3].nomedopais]],
-
-            disputaGrupoG: [[gruposTimes.timesNoGrupoG[0].nomedopais, gruposTimes.timesNoGrupoG[1].nomedopais],
-                [gruposTimes.timesNoGrupoG[2].nomedopais, gruposTimes.timesNoGrupoG[3].nomedopais]],
-
-            disputaGrupoH: [[gruposTimes.timesNoGrupoH[0].nomedopais, gruposTimes.timesNoGrupoH[1].nomedopais],
-                [gruposTimes.timesNoGrupoH[2].nomedopais, gruposTimes.timesNoGrupoH[3].nomedopais]],
-            }
-
-            const day2: IMatchDay = {
-            disputaGrupoA: [[gruposTimes.timesNoGrupoA[0].nomedopais, gruposTimes.timesNoGrupoA[2].nomedopais],
-                [gruposTimes.timesNoGrupoA[3].nomedopais, gruposTimes.timesNoGrupoA[1].nomedopais]],
-
-            disputaGrupoB: [[gruposTimes.timesNoGrupoB[0].nomedopais, gruposTimes.timesNoGrupoB[2].nomedopais],
-                [gruposTimes.timesNoGrupoB[3].nomedopais, gruposTimes.timesNoGrupoB[1].nomedopais]],
-
-            disputaGrupoC: [[gruposTimes.timesNoGrupoC[0].nomedopais, gruposTimes.timesNoGrupoC[2].nomedopais],
-                [gruposTimes.timesNoGrupoC[3].nomedopais, gruposTimes.timesNoGrupoC[1].nomedopais]],
-
-            disputaGrupoD: [[gruposTimes.timesNoGrupoD[0].nomedopais, gruposTimes.timesNoGrupoD[2].nomedopais],
-                [gruposTimes.timesNoGrupoD[3].nomedopais, gruposTimes.timesNoGrupoD[1].nomedopais]],
-
-            disputaGrupoE: [[gruposTimes.timesNoGrupoE[0].nomedopais, gruposTimes.timesNoGrupoE[2].nomedopais],
-                [gruposTimes.timesNoGrupoE[3].nomedopais, gruposTimes.timesNoGrupoE[1].nomedopais]],
-
-            disputaGrupoF: [[gruposTimes.timesNoGrupoF[0].nomedopais, gruposTimes.timesNoGrupoF[2].nomedopais],
-                [gruposTimes.timesNoGrupoF[3].nomedopais, gruposTimes.timesNoGrupoF[1].nomedopais]],
-
-            disputaGrupoG: [[gruposTimes.timesNoGrupoG[0].nomedopais, gruposTimes.timesNoGrupoG[2].nomedopais],
-                [gruposTimes.timesNoGrupoG[3].nomedopais, gruposTimes.timesNoGrupoG[1].nomedopais]],
-
-            disputaGrupoH: [[gruposTimes.timesNoGrupoH[0].nomedopais, gruposTimes.timesNoGrupoH[2].nomedopais],
-                [gruposTimes.timesNoGrupoH[3].nomedopais, gruposTimes.timesNoGrupoH[1].nomedopais]],
-            }
-
-            const day3: IMatchDay = {
-            disputaGrupoA: [[gruposTimes.timesNoGrupoA[3].nomedopais, gruposTimes.timesNoGrupoA[0].nomedopais],
-                [gruposTimes.timesNoGrupoA[1].nomedopais, gruposTimes.timesNoGrupoA[2].nomedopais]],
-
-            disputaGrupoB: [[gruposTimes.timesNoGrupoB[3].nomedopais, gruposTimes.timesNoGrupoB[0].nomedopais],
-                [gruposTimes.timesNoGrupoB[1].nomedopais, gruposTimes.timesNoGrupoB[2].nomedopais]],
-
-            disputaGrupoC: [[gruposTimes.timesNoGrupoC[3].nomedopais, gruposTimes.timesNoGrupoC[0].nomedopais],
-                [gruposTimes.timesNoGrupoC[1].nomedopais, gruposTimes.timesNoGrupoC[2].nomedopais]],
-
-            disputaGrupoD: [[gruposTimes.timesNoGrupoD[3].nomedopais, gruposTimes.timesNoGrupoD[0].nomedopais],
-                [gruposTimes.timesNoGrupoD[1].nomedopais, gruposTimes.timesNoGrupoD[2].nomedopais]],
-
-            disputaGrupoE: [[gruposTimes.timesNoGrupoE[3].nomedopais, gruposTimes.timesNoGrupoE[0].nomedopais],
-                [gruposTimes.timesNoGrupoE[1].nomedopais, gruposTimes.timesNoGrupoE[2].nomedopais]],
-
-            disputaGrupoF: [[gruposTimes.timesNoGrupoF[3].nomedopais, gruposTimes.timesNoGrupoF[0].nomedopais],
-                [gruposTimes.timesNoGrupoF[1].nomedopais, gruposTimes.timesNoGrupoF[2].nomedopais]],
-
-            disputaGrupoG: [[gruposTimes.timesNoGrupoG[3].nomedopais, gruposTimes.timesNoGrupoG[0].nomedopais],
-                [gruposTimes.timesNoGrupoG[1].nomedopais, gruposTimes.timesNoGrupoG[2].nomedopais]],
-
-            disputaGrupoH: [[gruposTimes.timesNoGrupoH[3].nomedopais, gruposTimes.timesNoGrupoH[0].nomedopais],
-                [gruposTimes.timesNoGrupoH[1].nomedopais, gruposTimes.timesNoGrupoH[2].nomedopais]],
-            }
-
-            return {
-                day1,
-                day2,
-                day3,
-            }
+            return utils.criarTabelaMatchDay(gruposTimes);
         }
 
         throw "Times Insuficiente para montar o MatchDay";
     }
 
-    public async decidirVencedor(inputPartidas: IInputMatchEFinais): Promise<any> {
+
+
+    public async decidirVencedor(inputPartidas: IInputMatchEFinais): Promise<string | undefined> {
         let vendoresDoMatchDay;
 
         if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY1) {
@@ -214,19 +135,19 @@ export class CopaController {
         return vendoresDoMatchDay
     }
 
-    private async vencedoresMatchDay(inputPartidas: IInputMatchEFinais): Promise<any> {
+    private async vencedoresMatchDay(inputPartidas: IInputMatchEFinais): Promise<string> {
         const vencedoresDasPartidas = [];
 
         const chavesDasPartidas = Object.keys(inputPartidas.partidas);
 
-        const timeVencedoresJaSalvosNoDB = await prisma.timesVencedoresDasPartidas.findMany()
+        const timeVencedoresJaSalvosNoDB: Array<ITimesVencedores> = await prisma.timesVencedoresDasPartidas.findMany()
 
         for (let i = 0; i < chavesDasPartidas.length; i++) {
             // @ts-ignore
             let partidaAtual = inputPartidas.partidas[chavesDasPartidas[i]];
 
             if (partidaAtual[1].qtdGol > partidaAtual[0].qtdGol) {
-                let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[1].idPais)
+                let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[1].idPais)
                 
                 partidaAtual[1] = { 
                     ...partidaAtual[1], 
@@ -235,19 +156,19 @@ export class CopaController {
 
                 vencedoresDasPartidas.push(partidaAtual[1]);
             } else if (partidaAtual[1].qtdGol === partidaAtual[0].qtdGol) {
-                let historicoDoTime1 = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[0].idPais)
+                let historicoDoTime1 = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[0].idPais)
                 partidaAtual[0] = { 
                     ...partidaAtual[0], 
                     pontuacao: historicoDoTime1 ? historicoDoTime1.pontuacao + 1 : 1
                 }
 
-                let historicoDoTime2 = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[1].idPais)
+                let historicoDoTime2 = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[1].idPais)
                 partidaAtual[1] = { 
                     ...partidaAtual[1], 
                     pontuacao: historicoDoTime2 ? historicoDoTime2.pontuacao + 1 : 1
                 }
             } else {
-                let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === partidaAtual[0].idPais)
+                let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[0].idPais)
                 
                 partidaAtual[0] = { 
                     ...partidaAtual[0], 
@@ -258,64 +179,114 @@ export class CopaController {
             }
         }
 
-        return this.salvarTimeVencedorNoDB(vencedoresDasPartidas, inputPartidas.tipoDeQualificacao);
+        return this.salvarTimeVencedorNoDB(vencedoresDasPartidas, inputPartidas.tipoDeQualificacao, timeVencedoresJaSalvosNoDB);
     }
 
-    private async salvarTimeVencedorNoDB(vencedoresDasPartidas: any[], tipoDePartida: string): Promise<any> {
+    private async salvarTimeVencedorNoDB(vencedoresDasPartidas: Array<any>, tipoDePartida: string, timeVencedoresJaSalvosNoDB: any): Promise<string> {
         try {
             const times = await this.buscarTodosOsTimes()
         
             for (let i = 0; i < vencedoresDasPartidas.length; i++) {
                 const dadosTimesVencedors = times.find((time) => time.id === vencedoresDasPartidas[i].idPais)
+                console.log("dadosTimesVencedors -> ", dadosTimesVencedors);
                 
-                await prisma.timesVencedoresDasPartidas.create({
-                    data: {
-                        id: vencedoresDasPartidas[i].idPais,
-                        // @ts-ignore
-                        nomedopais: dadosTimesVencedors.nomedopais,
-                        qtdgol: vencedoresDasPartidas[i].qtdGol,
-                        qtdcartaovermelho: vencedoresDasPartidas[i].qtdCartaoVermelho,
-                        qtdcartaoamarelo: vencedoresDasPartidas[i].qtdCartaoAmarelo,
-                        pontuacao: vencedoresDasPartidas[i].pontuacao,
-                        tipodepartida: tipoDePartida
-                    },
-                });
+                const timesVencedorExiste = timeVencedoresJaSalvosNoDB.find((time: any) => time.idPais === vencedoresDasPartidas[i].idPais)
+                console.log("timesVencedorExiste -> ", timesVencedorExiste);
+                
+                if (!timesVencedorExiste) {
+                    console.log("ESTOU DENTRO DO IF");
+                    console.log("vencedoresDasPartidas[i]", vencedoresDasPartidas[i]);
+                    console.log("timesVencedorExiste[i]", timesVencedorExiste[i]);
+
+                    await prisma.timesVencedoresDasPartidas.update({
+                        where: {
+                            id: vencedoresDasPartidas[i].idPais,
+                        },
+                        data: {
+                            // @ts-ignore
+                            nomedopais: dadosTimesVencedors.nomedopais,
+                            qtdgol: vencedoresDasPartidas[i].qtdGol || timesVencedorExiste[i].qtdGol,
+                            qtdcartaovermelho: vencedoresDasPartidas[i].qtdCartaoVermelho || timesVencedorExiste[i].qtdCartaoVermelho,
+                            qtdcartaoamarelo: vencedoresDasPartidas[i].qtdCartaoAmarelo || timesVencedorExiste[i].qtdCartaoAmarelo,
+                            pontuacao: vencedoresDasPartidas[i].pontuacao || timesVencedorExiste[i].pontuacao,
+                            tipodepartida: tipoDePartida || timesVencedorExiste[i].tipoDePartida
+                        },
+                    });
+                } else {
+                    console.log("ESTOU DENTRO DO ELSE");
+                
+                    await prisma.timesVencedoresDasPartidas.create({
+                        data: {
+                            id: vencedoresDasPartidas[i].idPais,
+                            // @ts-ignore
+                            nomedopais: dadosTimesVencedors.nomedopais,
+                            qtdgol: vencedoresDasPartidas[i].qtdGol,
+                            qtdcartaovermelho: vencedoresDasPartidas[i].qtdCartaoVermelho,
+                            qtdcartaoamarelo: vencedoresDasPartidas[i].qtdCartaoAmarelo,
+                            pontuacao: vencedoresDasPartidas[i].pontuacao,
+                            tipodepartida: tipoDePartida
+                        },
+                    });
+
+                }
             }
 
             return "Salvo!"
         } catch (error) {
-            return error
+            console.log(error);
+            return "Erro ao salvar os times vencedores"
         }
     }
 
-    public async buscarTimesVendores(): Promise<Array<any>> {
+    public async buscarTimesVendores(): Promise<Array<ITimesVencedores>> {
         const time = await prisma.timesVencedoresDasPartidas.findMany();
 
         return time
     }
 
+    public async decidirVencedorMatchDay(): Promise<any> {
+        const timesVencedores: Array<ITimesVencedores> = await this.buscarTimesVendores()
+        const timesTotais: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
-    public async cadastrarTodosTimes(cadastroDosTime: Array<any>): Promise<any> {
+        const timesVencedoresComDadosCompleto = timesTotais.filter((time, index) => time.id === timesVencedores[index].id)
+        
+        let timesVencedoresComDadosCompletoEPontuacao = []
+        for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {
+            // @ts-ignore
+            timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
+        }
+
+        // timesVencedoresComDadosCompletoEPontuacao[0].
+
+    }
+
+    public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
         try {
+            const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
+   
             for (let i = 0; i < cadastroDosTime.length; i++) {
-                await prisma.times.create({
-                    data: {
-                        id: cadastroDosTime[i].id,
-                        nomedopais: cadastroDosTime[i].nomedopais,
-                        qtddejogadores: cadastroDosTime[i].qtddejogadores,
-                        treinador: cadastroDosTime[i].treinador,
-                        capitao: cadastroDosTime[i].capitao,
-                        qtddecartaovermelho: cadastroDosTime[i].qtddecartaovermelho,
-                        qtddecartaoamarelho: cadastroDosTime[i].qtddecartaoamarelho,
-                        estaemjogo: timesEmJogo.EM_JOGO,
-                        grupopertencente: cadastroDosTime[i].grupopertencente,
-                    },
-                })
+                const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroDosTime[i].nomedopais)
+                
+                if (!timeJaExiste) {
+                    await prisma.times.create({
+                        data: {
+                            id: cadastroDosTime[i].id,
+                            nomedopais: cadastroDosTime[i].nomedopais,
+                            qtddejogadores: cadastroDosTime[i].qtddejogadores,
+                            treinador: cadastroDosTime[i].treinador,
+                            capitao: cadastroDosTime[i].capitao,
+                            qtddecartaovermelho: cadastroDosTime[i].qtddecartaovermelho,
+                            qtddecartaoamarelho: cadastroDosTime[i].qtddecartaoamarelho,
+                            estaemjogo: timesEmJogo.EM_JOGO,
+                            grupopertencente: cadastroDosTime[i].grupopertencente,
+                        },
+                    })
+                } 
             }
             
             return "times criados"
         } catch(error) {
-            return error
+            return "Erro ao cadastrar os times"
         }           
     }
 }

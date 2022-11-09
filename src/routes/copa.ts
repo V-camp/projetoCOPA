@@ -61,7 +61,35 @@ server.get(`${path}/listarAsDisputadasIniciais`, async (req: Request, res: Respo
     }
 })
 
-server.post(`${path}/mostrarVencedorMatch`, async (req: Request, res: Response) => {
+server.post(`${path}/mostrarVencedorMatch1`, async (req: Request, res: Response) => {
+    try {
+        const disputadasIniciais = await copaController.decidirVencedor(req.body)
+
+        if (disputadasIniciais) {
+            return res.json(disputadasIniciais);
+        }
+
+        return res.send("Error!")
+    } catch(error) {
+        return response.json(error)
+    }
+})
+
+server.post(`${path}/mostrarVencedorMatch2`, async (req: Request, res: Response) => {
+    try {
+        const disputadasIniciais = await copaController.decidirVencedor(req.body)
+
+        if (disputadasIniciais) {
+            return res.json(disputadasIniciais);
+        }
+
+        return res.send("Error!")
+    } catch(error) {
+        return response.json(error)
+    }
+})
+
+server.post(`${path}/mostrarVencedorMatch3`, async (req: Request, res: Response) => {
     try {
         const disputadasIniciais = await copaController.decidirVencedor(req.body)
 
