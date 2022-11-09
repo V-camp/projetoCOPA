@@ -7,6 +7,7 @@ import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
+//@ts-ignore
 import { PrismaClient } from '@prisma/client'
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
 
@@ -148,7 +149,7 @@ export class CopaController {
 
             if (partidaAtual[1].qtdGol > partidaAtual[0].qtdGol) {
                 let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[1].idPais)
-                
+
                 partidaAtual[1] = { 
                     ...partidaAtual[1], 
                     pontuacao: historicoDoTime ? historicoDoTime.pontuacao + 3 : 3
@@ -249,6 +250,8 @@ export class CopaController {
         const timesTotais: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
         const timesVencedoresComDadosCompleto = timesTotais.filter((time, index) => time.id === timesVencedores[index].id)
+
+
         
         let timesVencedoresComDadosCompletoEPontuacao = []
         for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {

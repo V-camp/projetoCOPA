@@ -7,5 +7,6 @@
         "*.test.ts"
     ],
     "delay": "2",
-    "exec": "../node_modules/typescript/bin/tsc -p .; node"
+    "exec": "../node_modules/typescript/bin/tsc -p .; node",
+    "legacyWatch": true
 }

@@ -29,7 +29,3 @@ model timesVencedoresDasPartidas {
     tipodepartida       String
 }
 
-model teste {
-    id                  Int    @default(autoincrement()) @id
-    String              String 
-}
