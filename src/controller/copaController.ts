@@ -185,8 +185,6 @@ export class CopaController {
 
     private async salvarTimeVencedorNoDB(vencedoresDasPartidas: Array<any>, tipoDePartida: string, timeVencedoresJaSalvosNoDB: any): Promise<string> {
         try {
-            console.log(vencedoresDasPartidas)
-            
             const times = await this.buscarTodosOsTimes()
         
             for (let i = 0; i < vencedoresDasPartidas.length; i++) {
@@ -233,7 +231,6 @@ export class CopaController {
 
             return "Salvo!"
         } catch (error) {
-            console.log(error);
             return "Erro ao salvar os times vencedores"
         }
     }
@@ -245,21 +242,22 @@ export class CopaController {
     }
 
     public async decidirVencedorMatchDay(): Promise<any> {
-        const timesVencedores: Array<ITimesVencedores> = await this.buscarTimesVendores()
-        const timesTotais: Array<IdadosTime> = await this.buscarTodosOsTimes()
+        // const timesVencedores: Array<any> = await this.buscarTimesVendores()
+        // const timesTotais: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
-        const timesVencedoresComDadosCompleto = timesTotais.filter((time, index) => time.id === timesVencedores[index].id)
-
-
+        // const timesVencedoresComDadosCompleto = timesTotais.filter((time, index) => time.id === timesVencedores[index].id)
         
-        let timesVencedoresComDadosCompletoEPontuacao = []
-        for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {
-            // @ts-ignore
-            timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
-        }
+        // let timesVencedoresComDadosCompletoEPontuacao = []
+        // for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {
+        //     // @ts-ignore
+        //     timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
+        // }
 
-        // timesVencedoresComDadosCompletoEPontuacao[0].
-
+        // console.log(timesVencedoresComDadosCompletoEPontuacao);
+        
+        // // timesVencedoresComDadosCompletoEPontuacao[0].
+        
+        return "timesVencedoresComDadosCompletoEPontuacao"
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {

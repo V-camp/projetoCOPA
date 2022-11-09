@@ -114,6 +114,20 @@ server.get(`${path}/verVencedoresPartidas`, async (req: Request, res: Response) 
     return res.send("Error");
 })
 
+server.get(`${path}/matchdayVencedores`, async (req: Request, res: Response) => {
+    try {
+        const times = await copaController.decidirVencedorMatchDay()
+
+        if (times) {
+            return res.json(times);
+        }
+    
+        return res.send("Error");
+    } catch(error) {
+        return error
+    }
+})
+
 server.post(`${path}/cadastrarTodosTimes`, async (req: Request, res: Response) => {
     try {
         const timeCadastrado = await copaController.cadastrarTodosTimes(req.body)
