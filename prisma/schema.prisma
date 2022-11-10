@@ -19,6 +19,19 @@ model times {
     grupopertencente    String
 }
 
+model vencedoresMatchDays {
+    id                  Int    @default(autoincrement()) @id
+    nomedopais          String @unique
+    qtddejogadores      Int
+    treinador           String
+    capitao             String
+    qtddecartaovermelho Int
+    qtddecartaoamarelho Int
+    estaemjogo          String
+    grupopertencente    String
+    pontuacao           Int
+}
+
 model timesVencedoresDasPartidas {
     id                  Int    @unique
     nomedopais          String @unique
@@ -28,4 +41,5 @@ model timesVencedoresDasPartidas {
     pontuacao           Int
     tipodepartida       String
 }
+
 
