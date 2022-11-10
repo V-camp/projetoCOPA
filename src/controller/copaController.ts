@@ -94,7 +94,7 @@ export class CopaController {
         return this.matchDays(grupoTime, times); 
     }
 
-    public timesEmCadaGrupo(times: Array<IdadosTime>): IGruposTimes {
+    public timesEmCadaGrupo(times: Array<IdadosTime | any>): IGruposTimes {
         return {
             timesNoGrupoA: times.filter((time) => time.grupopertencente === "A"),
             timesNoGrupoB: times.filter((time) => time.grupopertencente === "B"),
@@ -259,10 +259,33 @@ export class CopaController {
         let timesVencedoresComDadosCompletoEPontuacao = []
         for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {
             // @ts-ignore
-            timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
+            timesVencedoresComDadosCompletoEPontuacao.push(
+                { 
+                   ...timesVencedoresComDadosCompleto[i],
+                   ...timesVencedores[i]
+                }
+            )
         }
 
-        return timesVencedoresComDadosCompletoEPontuacao 
+        const timesVencedoresMatchDayPorGrupo = this.timesEmCadaGrupo(timesVencedoresComDadosCompletoEPontuacao);
+
+        const definirVencedoresPara16DeFinais = []
+
+        for (let i = 0; i < 3; i++) {
+            let time = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[i]
+            // @ts-ignore
+            let menorPontuacao = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[0].pontuacao
+            // @ts-ignore
+            if (time.pontuacao > menorPontuacao) {
+                definirVencedoresPara16DeFinais.push(time)
+            } else {
+                // @ts-ignore
+                menorPontuacao = time.pontuacao
+            }
+        }
+
+
+        return definirVencedoresPara16DeFinais 
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
