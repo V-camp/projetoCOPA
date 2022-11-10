@@ -253,9 +253,7 @@ export class CopaController {
         let timesVencedoresComDadosCompleto = []
         for (let index = 0; index < timesVencedores.length; index++) {
             timesVencedoresComDadosCompleto.push(timesTotais.find((time) => time.id === timesVencedores[index].id))
-            console.log(timesVencedoresComDadosCompleto)
         }
-        console.log(timesVencedoresComDadosCompleto)
 
         //@ts-ignore
         let timesVencedoresComDadosCompletoEPontuacao = []
@@ -264,10 +262,7 @@ export class CopaController {
             timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
         }
 
-        //@ts-ignore
-        console.log(timesVencedoresComDadosCompletoEPontuacao);
-
-        return "timesVencedoresComDadosCompletoEPontuacao"
+        return timesVencedoresComDadosCompletoEPontuacao 
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
