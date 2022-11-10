@@ -114,6 +114,20 @@ server.get(`${path}/verVencedoresPartidas`, async (req: Request, res: Response) 
     return res.send("Error");
 })
 
+server.post(`${path}/cadastrarTodosTimes`, async (req: Request, res: Response) => {
+    try {
+        const timeCadastrado = await copaController.cadastrarTodosTimes(req.body)
+
+        if (timeCadastrado) {
+            return res.json(timeCadastrado);
+        }
+
+        return res.json("Error! - Dados inseridos inválidos ou faltandes");
+    } catch (error) {
+        return res.json(error)
+    }
+})
+
 server.get(`${path}/matchdayVencedores`, async (req: Request, res: Response) => {
     try {
         const times = await copaController.decidirVencedorMatchDay()
@@ -121,24 +135,10 @@ server.get(`${path}/matchdayVencedores`, async (req: Request, res: Response) => 
         if (times) {
             return res.json(times);
         }
-    
+
         return res.send("Error");
     } catch(error) {
         return error
-    }
-})
-
-server.post(`${path}/cadastrarTodosTimes`, async (req: Request, res: Response) => {
-    try {
-        const timeCadastrado = await copaController.cadastrarTodosTimes(req.body)
-    
-        if (timeCadastrado) {
-            return res.json(timeCadastrado);
-        }
-    
-        return res.json("Error! - Dados inseridos inválidos ou faltandes");
-    } catch (error) {
-        return res.json(error)
     }
 })
 

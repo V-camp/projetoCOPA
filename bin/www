@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const app = require("../dist/index");
+const app = require("../dist/src/index");
 
 const PORT = process.env.PORT || 8080;
 

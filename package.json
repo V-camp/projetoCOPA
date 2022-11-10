@@ -54,6 +54,7 @@
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.6.0",
+    "test": "^3.2.1",
     "ts-node": "^10.9.1",
     "tsc": "^2.0.4"
   },

@@ -150,8 +150,10 @@ export class CopaController {
             if (partidaAtual[1].qtdGol > partidaAtual[0].qtdGol) {
                 let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[1].idPais)
 
+                console.log(historicoDoTime);
                 partidaAtual[1] = { 
                     ...partidaAtual[1], 
+                    //@ts-ignore
                     pontuacao: historicoDoTime ? historicoDoTime.pontuacao + 3 : 3
                 }
 
@@ -160,12 +162,14 @@ export class CopaController {
                 let historicoDoTime1 = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[0].idPais)
                 partidaAtual[0] = { 
                     ...partidaAtual[0], 
+                    //@ts-ignore
                     pontuacao: historicoDoTime1 ? historicoDoTime1.pontuacao + 1 : 1
                 }
 
                 let historicoDoTime2 = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[1].idPais)
                 partidaAtual[1] = { 
                     ...partidaAtual[1], 
+                    //@ts-ignore
                     pontuacao: historicoDoTime2 ? historicoDoTime2.pontuacao + 1 : 1
                 }
             } else {
@@ -173,6 +177,7 @@ export class CopaController {
                 
                 partidaAtual[0] = { 
                     ...partidaAtual[0], 
+                    //@ts-ignore
                     pontuacao: historicoDoTime ? historicoDoTime.pontuacao + 3 : 3
                 }
 
@@ -242,21 +247,26 @@ export class CopaController {
     }
 
     public async decidirVencedorMatchDay(): Promise<any> {
-        // const timesVencedores: Array<any> = await this.buscarTimesVendores()
-        // const timesTotais: Array<IdadosTime> = await this.buscarTodosOsTimes()
+        const timesVencedores: Array<any> = await this.buscarTimesVendores()
+        const timesTotais: Array<any> = await this.buscarTodosOsTimes()
 
-        // const timesVencedoresComDadosCompleto = timesTotais.filter((time, index) => time.id === timesVencedores[index].id)
-        
-        // let timesVencedoresComDadosCompletoEPontuacao = []
-        // for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {
-        //     // @ts-ignore
-        //     timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
-        // }
+        let timesVencedoresComDadosCompleto = []
+        for (let index = 0; index < timesVencedores.length; index++) {
+            timesVencedoresComDadosCompleto.push(timesTotais.find((time) => time.id === timesVencedores[index].id))
+            console.log(timesVencedoresComDadosCompleto)
+        }
+        console.log(timesVencedoresComDadosCompleto)
 
-        // console.log(timesVencedoresComDadosCompletoEPontuacao);
-        
-        // // timesVencedoresComDadosCompletoEPontuacao[0].
-        
+        //@ts-ignore
+        let timesVencedoresComDadosCompletoEPontuacao = []
+        for (let i = 0; i < timesVencedoresComDadosCompleto.length; i++) {
+            // @ts-ignore
+            timesVencedoresComDadosCompletoEPontuacao.push({ ...timesVencedoresComDadosCompleto[i], ...timesVencedores[i].pontuacao })
+        }
+
+        //@ts-ignore
+        console.log(timesVencedoresComDadosCompletoEPontuacao);
+
         return "timesVencedoresComDadosCompletoEPontuacao"
     }
 
