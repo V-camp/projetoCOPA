@@ -1,0 +1,306 @@
+[
+    {
+        "id": 34,
+        "nomedopais": "Qatar",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "A"
+    },
+    {
+        "id": 35,
+        "nomedopais": "Equador",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "A"
+    },
+    {
+        "id": 68,
+        "nomedopais": "Senegal",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "A"
+    },
+    {
+        "id": 69,
+        "nomedopais": "Holanda",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "A"
+    },
+
+
+    {
+        "id": 70,
+        "nomedopais": "Inglaterra",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "B"
+    },
+    {
+        "id": 71,
+        "nomedopais": "Irã",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "B"
+    },
+    {
+        "id": 72,
+        "nomedopais": "Estadas Unidos",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "B"
+    },
+    {
+        "id": 73,
+        "nomedopais": "País de Gales",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "B"
+    },
+    
+    
+    {
+        "id": 36,
+        "nomedopais": "Argentina",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "C"
+    },
+    {
+        "id": 74,
+        "nomedopais": "Arábia Saudita",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "C"
+    },
+    {
+        "id": 75,
+        "nomedopais": "México",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "C"
+    },
+    {
+        "id": 76,
+        "nomedopais": "Polônia",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "C"
+    },
+
+
+
+    {
+        "id": 77,
+        "nomedopais": "França",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "D"
+    },
+    {
+        "id": 78,
+        "nomedopais": "Dinamarca",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "D"
+    },
+    {
+        "id": 79,
+        "nomedopais": "Tunísia",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "D"
+    },
+    {
+        "id": 80,
+        "nomedopais": "Austrália",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "D"
+    },
+
+
+    {
+        "id": 81,
+        "nomedopais": "Espanha",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "E"
+    },
+    {
+        "id": 82,
+        "nomedopais": "Alemanha",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "E"
+    },
+    {
+        "id": 83,
+        "nomedopais": "Japão",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "E"
+    },
+    {
+        "id": 84,
+        "nomedopais": "Costa Rica",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "E"
+    },
+
+
+    {
+        "id": 85,
+        "nomedopais": "Bélgica",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "F"
+    },
+    {
+        "id": 86,
+        "nomedopais": "Canadá",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "F"
+    },
+    {
+        "id": 87,
+        "nomedopais": "Marrocos",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "F"
+    },
+    {
+        "id": 88,
+        "nomedopais": "Croácia",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "F"
+    },
+
+
+    {
+        "id": 1,
+        "nomedopais": "Brasil",
+        "qtddejogadores": 11,
+        "treinador": "Ronaldo",
+        "capitao": "Neymar",
+        "estaemjogo": "Sim",
+        "grupopertencente": "G"
+    },
+    {
+        "id": 89,
+        "nomedopais": "Sárvia",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "G"
+    },
+    {
+        "id": 90,
+        "nomedopais": "Suiça",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "G"
+    },
+    {
+        "id": 91,
+        "nomedopais": "Camarões",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "G"
+    },
+
+
+    
+    {
+        "id": 92,
+        "nomedopais": "Portugual",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "H"
+    },
+    {
+        "id": 93,
+        "nomedopais": "Gana",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "H"
+    },
+    {
+        "id": 94,
+        "nomedopais": "Uruguai",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "H"
+    },
+    {
+        "id": 95,
+        "nomedopais": "Coreia do Sul",
+        "qtddejogadores": 11,
+        "treinador": "treinadorTeste",
+        "capitao": "capitaoTeste",
+        "estaemjogo": "Em jogo",
+        "grupopertencente": "H"
+    }
+]

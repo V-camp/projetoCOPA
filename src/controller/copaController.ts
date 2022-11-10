@@ -7,7 +7,6 @@ import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
-//@ts-ignore
 import { PrismaClient } from '@prisma/client'
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
 
@@ -49,8 +48,6 @@ export class CopaController {
                     qtddejogadores: cadastroTime.qtddejogadores,
                     treinador: cadastroTime.treinador,
                     capitao: cadastroTime.capitao,
-                    qtddecartaovermelho: cadastroTime.qtddecartaovermelho,
-                    qtddecartaoamarelho: cadastroTime.qtddecartaoamarelho,
                     estaemjogo: timesEmJogo.EM_JOGO,
                     grupopertencente: cadastroTime.grupopertencente,
                 },
@@ -75,8 +72,6 @@ export class CopaController {
                 qtddejogadores: timeAtualizar.qtddejogadores || timeExistente?.qtddejogadores,
                 treinador: timeAtualizar.treinador || timeExistente?.treinador,
                 capitao: timeAtualizar.capitao || timeExistente?.capitao,
-                qtddecartaovermelho: timeAtualizar.qtddecartaovermelho || timeExistente?.qtddecartaovermelho,
-                qtddecartaoamarelho: timeAtualizar.qtddecartaoamarelho || timeExistente?.qtddecartaoamarelho,
                 estaemjogo: timeAtualizar.estaemjogo || timeExistente?.estaemjogo,
                 grupopertencente: timeAtualizar.grupopertencente || timeExistente?.grupopertencente,
             },
@@ -198,9 +193,6 @@ export class CopaController {
                 const timesVencedorExiste = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === vencedoresDasPartidas[i].idPais)
                 
                 if (timesVencedorExiste) {
-                    console.log("ESTOU DENTRO DO IF");
-                    console.log("timesVencedorExiste -> ", timesVencedorExiste);
-
                     await prisma.timesVencedoresDasPartidas.update({
                         where: {
                             id: vencedoresDasPartidas[i].idPais,
@@ -215,9 +207,7 @@ export class CopaController {
                             tipodepartida: tipoDePartida || timesVencedorExiste.tipodepartida
                         },
                     });
-                } else {
-                    console.log("ESTOU DENTRO DO ELSE");
-                
+                } else {                
                     await prisma.timesVencedoresDasPartidas.create({
                         data: {
                             id: vencedoresDasPartidas[i].idPais,
@@ -268,34 +258,59 @@ export class CopaController {
         }
 
         const timesVencedoresMatchDayPorGrupo = this.timesEmCadaGrupo(timesVencedoresComDadosCompletoEPontuacao);
-
-        const definirVencedoresPara16DeFinais = []
+        const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo)
+        console.log("chaves -", chavesTimes);
+        
 
         for (let i = 0; i < 3; i++) {
-            let time = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[i]
             // @ts-ignore
-            let menorPontuacao = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[0].pontuacao
-            // @ts-ignore
-            if (time.pontuacao > menorPontuacao) {
-                definirVencedoresPara16DeFinais.push(time)
-            } else {
-                // @ts-ignore
-                menorPontuacao = time.pontuacao
+            let time = timesVencedoresMatchDayPorGrupo[chavesTimes[i]]
+            
+            for (let j = 0; j < 3; j++) {
+                if (time[j].qtdcartaovermelho > 0) {
+                    // @ts-ignore
+                    console.log("1", timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 3)
+                }
+
+                if (time[j].qtdcartaoamarelo > 0) {
+                    // @ts-ignore
+                    timesVencedoresMatchDayPorGrupo[chavesTimes[i][j]].pontuacao -= 1
+                }
             }
         }
 
+        
+        const definirVencedoresPara16DeFinais = []
+
+        // console.log("eee->", timesVencedoresMatchDayPorGrupo.timesNoGrupoA);
+        
+
+        // for (let i = 0; i < 3; i++) {
+        //     let time = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[i]
+        //     // @ts-ignore
+        //     let menorPontuacao = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[0].pontuacao
+        //     console.log("mp =", menorPontuacao);
+            
+        //     // @ts-ignore
+        //     if (time.pontuacao >= menorPontuacao) {
+        //         definirVencedoresPara16DeFinais.push(time)
+        //         console.log("- ", definirVencedoresPara16DeFinais[i]);
+        //     } else {
+        //         // @ts-ignore
+        //         menorPontuacao = time.pontuacao
+        //         console.log("else", menorPontuacao);
+        //     }
+        // }
+
+        // console.log("Depois", definirVencedoresPara16DeFinais);
+        
 
         return definirVencedoresPara16DeFinais 
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
-        try {
-            const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
-   
+        try {   
             for (let i = 0; i < cadastroDosTime.length; i++) {
-                // const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroDosTime[i].nomedopais)
-                
-                // if (!timeJaExiste) {
                     await prisma.times.create({
                         data: {
                             id: cadastroDosTime[i].id,
@@ -303,13 +318,10 @@ export class CopaController {
                             qtddejogadores: cadastroDosTime[i].qtddejogadores,
                             treinador: cadastroDosTime[i].treinador,
                             capitao: cadastroDosTime[i].capitao,
-                            qtddecartaovermelho: cadastroDosTime[i].qtddecartaovermelho,
-                            qtddecartaoamarelho: cadastroDosTime[i].qtddecartaoamarelho,
                             estaemjogo: timesEmJogo.EM_JOGO,
                             grupopertencente: cadastroDosTime[i].grupopertencente,
-                        },
+                        }
                     })
-                // } 
             }
             
             return "times criados"

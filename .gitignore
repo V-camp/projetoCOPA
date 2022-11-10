@@ -39,7 +39,9 @@ dist
 node_modules
 jspm_packages
 package-lock.json
-temp
+
+
+input.txt
 
 # Optional npm cache directory
 .npm

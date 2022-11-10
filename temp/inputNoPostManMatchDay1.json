@@ -1,0 +1,244 @@
+{
+    "tipoDeQualificacao": "MatchDay1",
+    "partidas": {
+        "partida1": [
+            {
+                "idPais": 34,
+                "qtdGol": 6,
+                "qtdCartaoVermelho": 2,
+                "qtdCartaoAmarelo": 3
+            },
+            {
+                "idPais": 35,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida2": [
+            {
+                "idPais": 68,
+                "qtdGol": 2,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 1
+            },
+            {
+                "idPais": 69,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida3": [
+            {
+                "idPais": 70,
+                "qtdGol": 2,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 0
+            },
+            {
+                "idPais": 71,
+                "qtdGol": 0,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida4": [
+            {
+                "idPais": 72,
+                "qtdGol": 5,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 1
+            },
+            {
+                "idPais": 73,
+                "qtdGol": 1,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 0
+            }
+        ],
+
+        "partida5": [
+            {
+                "idPais": 36,
+                "qtdGol": 2,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            },
+            {
+                "idPais": 74,
+                "qtdGol": 1,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida6": [
+            {
+                "idPais": 75,
+                "qtdGol": 6,
+                "qtdCartaoVermelho": 2,
+                "qtdCartaoAmarelo": 3
+            },
+            {
+                "idPais": 76,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida7": [
+            {
+                "idPais": 77,
+                "qtdGol": 4,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 0
+            },
+            {
+                "idPais": 78,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida8": [
+            {
+                "idPais": 79,
+                "qtdGol": 6,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 1
+            },
+            {
+                "idPais": 80,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 1
+            }
+        ],
+
+        "partida9": [
+            {
+                "idPais": 81,
+                "qtdGol": 5,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 2
+            },
+            {
+                "idPais": 82,
+                "qtdGol": 0,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida10": [
+            {
+                "idPais": 83,
+                "qtdGol": 4,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 0
+            },
+            {
+                "idPais": 84,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 1
+            }
+        ],
+
+        "partida11": [
+            {
+                "idPais": 85,
+                "qtdGol": 5,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 0
+            },
+            {
+                "idPais": 86,
+                "qtdGol": 7,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 0
+            }
+        ],
+
+        "partida12": [
+            {
+                "idPais": 87,
+                "qtdGol": 6,
+                "qtdCartaoVermelho": 2,
+                "qtdCartaoAmarelo": 3
+            },
+            {
+                "idPais": 88,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida13": [
+            {
+                "idPais": 1,
+                "qtdGol": 6,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 2
+            },
+            {
+                "idPais": 89,
+                "qtdGol": 2,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida14": [
+            {
+                "idPais": 90,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 0
+            },
+            {
+                "idPais": 91,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida15": [
+            {
+                "idPais": 92,
+                "qtdGol": 4,
+                "qtdCartaoVermelho": 2,
+                "qtdCartaoAmarelo": 2
+            },
+            {
+                "idPais": 93,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 1,
+                "qtdCartaoAmarelo": 2
+            }
+        ],
+
+        "partida16": [
+            {
+                "idPais": 94,
+                "qtdGol": 3,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 3
+            },
+            {
+                "idPais": 95,
+                "qtdGol": 2,
+                "qtdCartaoVermelho": 0,
+                "qtdCartaoAmarelo": 2
+            }
+        ]
+    }
+}

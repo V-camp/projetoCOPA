@@ -13,8 +13,6 @@ model times {
     qtddejogadores      Int
     treinador           String
     capitao             String
-    qtddecartaovermelho Int
-    qtddecartaoamarelho Int
     estaemjogo          String
     grupopertencente    String
 }
@@ -25,11 +23,13 @@ model vencedoresMatchDays {
     qtddejogadores      Int
     treinador           String
     capitao             String
-    qtddecartaovermelho Int
-    qtddecartaoamarelho Int
     estaemjogo          String
     grupopertencente    String
+    qtdgol              Int
+    qtdcartaovermelho   Int
+    qtdcartaoamarelo    Int
     pontuacao           Int
+    tipodepartida       String
 }
 
 model timesVencedoresDasPartidas {

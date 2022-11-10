@@ -1,12 +1,12 @@
 import { IdadosTime } from "./DadosTime";
 
 export interface IGruposTimes {
-    timesNoGrupoA: Array<IdadosTime>,
-    timesNoGrupoB: Array<IdadosTime>;
-    timesNoGrupoC: Array<IdadosTime>;
-    timesNoGrupoD: Array<IdadosTime>;
-    timesNoGrupoE: Array<IdadosTime>;
-    timesNoGrupoF: Array<IdadosTime>;
-    timesNoGrupoG: Array<IdadosTime>;
-    timesNoGrupoH: Array<IdadosTime>;
+    timesNoGrupoA: Array<IdadosTime | any>,
+    timesNoGrupoB: Array<IdadosTime | any>;
+    timesNoGrupoC: Array<IdadosTime | any>;
+    timesNoGrupoD: Array<IdadosTime | any>;
+    timesNoGrupoE: Array<IdadosTime | any>;
+    timesNoGrupoF: Array<IdadosTime | any>;
+    timesNoGrupoG: Array<IdadosTime | any>;
+    timesNoGrupoH: Array<IdadosTime | any>;
 }
