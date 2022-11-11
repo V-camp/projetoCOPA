@@ -1,4 +1,3 @@
-import { IPartidasGerais } from './../model/interfaces/PartidasGerais';
 import { Utils } from './../util/utils';
 import { IdadosTime } from "../model/interfaces/DadosTime"
 import { IdadosAtualizarTime } from "../model/interfaces/DadosAtualizarTime"
@@ -9,6 +8,9 @@ import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
 import { PrismaClient } from '@prisma/client'
+import { ITimesDadosCompletos } from 'model/interfaces/TimeDadosCompletos';
+import { IPartida } from 'model/interfaces/Partida';
+import { IVencedorMatchDay } from 'model/interfaces/VencedorMatchDay';
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -59,7 +61,7 @@ export class CopaController {
         throw "Error rever informações..."
     }
 
-    public async atualizarTime(timeAtualizar: IdadosAtualizarTime): Promise<object> {     
+    public async atualizarTime(timeAtualizar: IdadosAtualizarTime): Promise<IdadosTime> {     
         const times = await this.buscarTodosOsTimes()
         const timeExistente = times.find((timeAntesDeAtualizar) => timeAntesDeAtualizar.id === timeAtualizar.id)
 
@@ -89,7 +91,7 @@ export class CopaController {
         return this.matchDays(grupoTime, times); 
     }
 
-    public timesEmCadaGrupo(times: Array<IdadosTime | any>): IGruposTimes {
+    public timesEmCadaGrupo(times: Array<IdadosTime | ITimesDadosCompletos>): IGruposTimes {
         return {
             timesNoGrupoA: times.filter((time) => time.grupopertencente === "A"),
             timesNoGrupoB: times.filter((time) => time.grupopertencente === "B"),
@@ -178,18 +180,19 @@ export class CopaController {
                 vencedoresDasPartidas.push(partidaAtual[0]);
             }
         }
+        console.log(vencedoresDasPartidas)
 
         return this.salvarTimeVencedorNoDB(vencedoresDasPartidas, inputPartidas.tipoDeQualificacao, timeVencedoresJaSalvosNoDB);
     }
 
-    private async salvarTimeVencedorNoDB(vencedoresDasPartidas: Array<any>, tipoDePartida: string, timeVencedoresJaSalvosNoDB: any): Promise<string> {
+    private async salvarTimeVencedorNoDB(vencedoresDasPartidas: Array<IVencedorMatchDay>, tipoDePartida: string, timeVencedoresJaSalvosNoDB: Array<ITimesVencedores>): Promise<string> {
         try {
             const times = await this.buscarTodosOsTimes()
         
             for (let i = 0; i < vencedoresDasPartidas.length; i++) {
                 const dadosTimesVencedors = times.find((time) => time.id === vencedoresDasPartidas[i].idPais)
                 
-                const timesVencedorExiste = timeVencedoresJaSalvosNoDB.find((time: any) => time.id === vencedoresDasPartidas[i].idPais)
+                const timesVencedorExiste = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === vencedoresDasPartidas[i].idPais)
                 
                 if (timesVencedorExiste) {
                     await prisma.timesVencedoresDasPartidas.update({
@@ -235,9 +238,9 @@ export class CopaController {
         return time
     }
 
-    public async decidirVencedorMatchDay(): Promise<any> {
-        const timesVencedores: Array<any> = await this.buscarTimesVendores()
-        const timesTotais: Array<any> = await this.buscarTodosOsTimes()
+    public async decidirVencedorMatchDay(): Promise<Array<ITimesDadosCompletos>> {
+        const timesVencedores: Array<ITimesVencedores> = await this.buscarTimesVendores()
+        const timesTotais: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
         let timesVencedoresComDadosCompleto = []
         for (let index = 0; index < timesVencedores.length; index++) {
@@ -256,27 +259,29 @@ export class CopaController {
             )
         }
 
+        // @ts-ignore
         const timesVencedoresMatchDayPorGrupo = this.diminuirPontuacaoComBaseNosCartoes(timesVencedoresComDadosCompletoEPontuacao);
-      
+
         const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo);
 
         const definirVencedoresPara16DeFinais = this.ordenarTimesComBaseNaPontuacao(chavesTimes, timesVencedoresMatchDayPorGrupo);
-        
-        const vencedoresEmCadaGrupo= this.timesEmCadaGrupo(definirVencedoresPara16DeFinais)
+
+        const vencedoresEmCadaGrupo = this.timesEmCadaGrupo(definirVencedoresPara16DeFinais)
 
         const salvarVencedores = await this.salvarVencedoresDosMatchDays(vencedoresEmCadaGrupo, chavesTimes)
 
         return salvarVencedores 
     }
 
-    private async salvarVencedoresDosMatchDays(vencedoresEmCadaGrupo: IGruposTimes, chavesTimes: string[]) {
+    private async salvarVencedoresDosMatchDays(vencedoresEmCadaGrupo: IGruposTimes, chavesTimes: Array<string>) {
         let timesSalvosNoDB = []
+        
+        console.log("Estou no salvarVencedoresDosMatchDays");
         
         for (let i = 0; i < chavesTimes.length; i++) {
             // @ts-ignore
             let time = vencedoresEmCadaGrupo[chavesTimes[i]];
-            
-            for (let j = 0; j < time.length; j++) {
+            for (let j = 0; j < 2; j++) {
                 let timeSalvo = await prisma.vencedoresMatchDays.create({
                     data: {
                         // @ts-ignore
@@ -312,33 +317,7 @@ export class CopaController {
         return timesSalvosNoDB
     }
 
-    private ordenarTimesComBaseNaPontuacao(chavesTimes: any, timesVencedoresMatchDayPorGrupo: any) {
-        const definirVencedoresPara16DeFinais = [];
-
-        for (let i = 0; i < chavesTimes.length; i++) {
-            // @ts-ignore
-            timesVencedoresMatchDayPorGrupo[chavesTimes[i]].sort((time1: any, time2: any) => {
-                if (time1.pontuacao < time2.pontuacao) {
-                    return 1;
-                }
-                if (time1.pontuacao > time2.pontuacao) {
-                    return -1;
-                }
-                return 0;
-            });
-        }
-
-        for (let i = 0; i < chavesTimes.length; i++) {
-
-            definirVencedoresPara16DeFinais.push(
-                // @ts-ignore
-                timesVencedoresMatchDayPorGrupo[chavesTimes[i]][0], timesVencedoresMatchDayPorGrupo[chavesTimes[i]][1]
-            );
-        }
-        return definirVencedoresPara16DeFinais;
-    }
-
-    private diminuirPontuacaoComBaseNosCartoes(timesVencedoresComDadosCompletoEPontuacao: any[]) {
+    private diminuirPontuacaoComBaseNosCartoes(timesVencedoresComDadosCompletoEPontuacao: Array<ITimesDadosCompletos>) {
         const timesVencedoresMatchDayPorGrupo = this.timesEmCadaGrupo(timesVencedoresComDadosCompletoEPontuacao);
         const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo);
 
@@ -359,6 +338,36 @@ export class CopaController {
             }
         }
         return timesVencedoresMatchDayPorGrupo;
+    }
+
+    private ordenarTimesComBaseNaPontuacao(chavesTimes: Array<string>, timesVencedoresMatchDayPorGrupo: IGruposTimes) {
+        const definirVencedoresPara16DeFinais = [];
+
+        for (let i = 0; i < chavesTimes.length; i++) {
+            // @ts-ignore
+            timesVencedoresMatchDayPorGrupo[chavesTimes[i]].sort((time1: ITimesDadosCompletos, time2: ITimesDadosCompletos) => {
+                if (time1.pontuacao < time2.pontuacao) {
+                    return 1;
+                }
+                if (time1.pontuacao > time2.pontuacao) {
+                    return -1;
+                }
+                return 0;
+            });
+        }
+
+        for (let i = 0; i < chavesTimes.length; i++) {
+
+            definirVencedoresPara16DeFinais.push(
+                // @ts-ignore
+                timesVencedoresMatchDayPorGrupo[chavesTimes[i]][0], timesVencedoresMatchDayPorGrupo[chavesTimes[i]][1]
+            );
+        }
+        return definirVencedoresPara16DeFinais;
+    }
+
+    public async buscarVencedoresDosMatchDaysNoDb(): Promise<Array<ITimesDadosCompletos>> {
+        return prisma.vencedoresMatchDays.findMany()
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {

@@ -142,4 +142,18 @@ server.get(`${path}/matchdayVencedores`, async (req: Request, res: Response) => 
     }
 })
 
+server.get(`${path}/buscarTimesVencedores`, async (req: Request, res: Response) => {
+    try {
+        const times = await copaController.buscarVencedoresDosMatchDaysNoDb()
+
+        if (times) {
+            return res.json(times);
+        }
+
+        return res.send("Error");
+    } catch(error) {
+        return error
+    }
+})
+
 export default server
