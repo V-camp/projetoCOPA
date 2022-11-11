@@ -256,50 +256,109 @@ export class CopaController {
             )
         }
 
-        const timesVencedoresMatchDayPorGrupo = this.timesEmCadaGrupo(timesVencedoresComDadosCompletoEPontuacao);
-        const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo)
-    
+        const timesVencedoresMatchDayPorGrupo = this.diminuirPontuacaoComBaseNosCartoes(timesVencedoresComDadosCompletoEPontuacao);
+      
+        const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo);
+
+        const definirVencedoresPara16DeFinais = this.ordenarTimesComBaseNaPontuacao(chavesTimes, timesVencedoresMatchDayPorGrupo);
+        
+        const vencedoresEmCadaGrupo= this.timesEmCadaGrupo(definirVencedoresPara16DeFinais)
+
+        const salvarVencedores = await this.salvarVencedoresDosMatchDays(vencedoresEmCadaGrupo, chavesTimes)
+
+        return salvarVencedores 
+    }
+
+    private async salvarVencedoresDosMatchDays(vencedoresEmCadaGrupo: IGruposTimes, chavesTimes: string[]) {
+        let timesSalvosNoDB = []
+        
         for (let i = 0; i < chavesTimes.length; i++) {
             // @ts-ignore
-            let time = timesVencedoresMatchDayPorGrupo[chavesTimes[i]]
-
-            for(let j = 0; j < time.length; j++) {
-                if (time[j].qtdcartaovermelho > 0) {
-                    // @ts-ignore
-                    timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 3
-                }
-                
-                if (time[j].qtdcartaoamarelo > 0) {
-                    // @ts-ignore
-                    timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 1
-                }
+            let time = vencedoresEmCadaGrupo[chavesTimes[i]];
+            
+            for (let j = 0; j < time.length; j++) {
+                let timeSalvo = await prisma.vencedoresMatchDays.create({
+                    data: {
+                        // @ts-ignore
+                        id: vencedoresEmCadaGrupo[chavesTimes[i]][j].id,
+                        // @ts-ignore
+                        nomedopais: vencedoresEmCadaGrupo[chavesTimes[i]][j].nomedopais,
+                        // @ts-ignore
+                        qtddejogadores: vencedoresEmCadaGrupo[chavesTimes[i]][j].qtddejogadores,
+                        // @ts-ignore
+                        treinador: vencedoresEmCadaGrupo[chavesTimes[i]][j].treinador,
+                        // @ts-ignore
+                        capitao: vencedoresEmCadaGrupo[chavesTimes[i]][j].capitao,
+                        // @ts-ignore
+                        estaemjogo: vencedoresEmCadaGrupo[chavesTimes[i]][j].estaemjogo,
+                        // @ts-ignore
+                        grupopertencente: vencedoresEmCadaGrupo[chavesTimes[i]][j].grupopertencente,
+                        // @ts-ignore
+                        qtdgol: vencedoresEmCadaGrupo[chavesTimes[i]][j].qtdgol,
+                        // @ts-ignore
+                        qtdcartaovermelho: vencedoresEmCadaGrupo[chavesTimes[i]][j].qtdcartaovermelho,
+                        // @ts-ignore
+                        qtdcartaoamarelo: vencedoresEmCadaGrupo[chavesTimes[i]][j].qtdcartaoamarelo,
+                        // @ts-ignore
+                        pontuacao: vencedoresEmCadaGrupo[chavesTimes[i]][j].pontuacao,
+                        // @ts-ignore
+                        tipodepartida: vencedoresEmCadaGrupo[chavesTimes[i]][j].tipodepartida,
+                    },
+                });
+                timesSalvosNoDB.push(timeSalvo);
             }
         }
-      
-        const definirVencedoresPara16DeFinais = []
-        
-        for (let i = 0; i < chavesTimes.length; i++) {             
-             // @ts-ignore
+
+        return timesSalvosNoDB
+    }
+
+    private ordenarTimesComBaseNaPontuacao(chavesTimes: any, timesVencedoresMatchDayPorGrupo: any) {
+        const definirVencedoresPara16DeFinais = [];
+
+        for (let i = 0; i < chavesTimes.length; i++) {
+            // @ts-ignore
             timesVencedoresMatchDayPorGrupo[chavesTimes[i]].sort((time1: any, time2: any) => {
                 if (time1.pontuacao < time2.pontuacao) {
                     return 1;
-                  }
-                  if (time1.pontuacao > time2.pontuacao) {
+                }
+                if (time1.pontuacao > time2.pontuacao) {
                     return -1;
-                  }
-                  return 0
-            })
+                }
+                return 0;
+            });
         }
 
         for (let i = 0; i < chavesTimes.length; i++) {
-            
+
             definirVencedoresPara16DeFinais.push(
                 // @ts-ignore
                 timesVencedoresMatchDayPorGrupo[chavesTimes[i]][0], timesVencedoresMatchDayPorGrupo[chavesTimes[i]][1]
             );
         }
-        
-        return this.timesEmCadaGrupo(definirVencedoresPara16DeFinais) 
+        return definirVencedoresPara16DeFinais;
+    }
+
+    private diminuirPontuacaoComBaseNosCartoes(timesVencedoresComDadosCompletoEPontuacao: any[]) {
+        const timesVencedoresMatchDayPorGrupo = this.timesEmCadaGrupo(timesVencedoresComDadosCompletoEPontuacao);
+        const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo);
+
+        for (let i = 0; i < chavesTimes.length; i++) {
+            // @ts-ignore
+            let time = timesVencedoresMatchDayPorGrupo[chavesTimes[i]];
+
+            for (let j = 0; j < time.length; j++) {
+                if (time[j].qtdcartaovermelho > 0) {
+                    // @ts-ignore
+                    timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 3;
+                }
+
+                if (time[j].qtdcartaoamarelo > 0) {
+                    // @ts-ignore
+                    timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 1;
+                }
+            }
+        }
+        return timesVencedoresMatchDayPorGrupo;
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
