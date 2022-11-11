@@ -7,8 +7,8 @@ import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
-import { PrismaClient } from '@prisma/client'
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 const utils = new Utils()
