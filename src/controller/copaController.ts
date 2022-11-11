@@ -145,7 +145,6 @@ export class CopaController {
             if (partidaAtual[1].qtdGol > partidaAtual[0].qtdGol) {
                 let historicoDoTime = timeVencedoresJaSalvosNoDB.find((time: ITimesVencedores) => time.id === partidaAtual[1].idPais)
 
-                console.log(historicoDoTime);
                 partidaAtual[1] = { 
                     ...partidaAtual[1], 
                     //@ts-ignore
@@ -276,40 +275,31 @@ export class CopaController {
                 }
             }
         }
-
-        
+      
         const definirVencedoresPara16DeFinais = []
-
-        // console.log("antes->", timesVencedoresMatchDayPorGrupo);
         
-
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < chavesTimes.length; i++) {             
              // @ts-ignore
-            let time = timesVencedoresMatchDayPorGrupo[chavesTimes[i]]
-            console.log(time);
-            
-            for(let j = 0; j < time.length; j++) {
-                // @ts-ignore
-                let menorPontuacao = time[0].pontuacao
-                console.log("mp =", menorPontuacao);
-                
-                // @ts-ignore
-                if (time[j].pontuacao >= menorPontuacao) {
-                    definirVencedoresPara16DeFinais.push(time[j])
-                    console.log("- ", definirVencedoresPara16DeFinais[j]);
-                } else {
-                    // @ts-ignore
-                    menorPontuacao = time[j].pontuacao
-                    console.log("else", menorPontuacao);
-                }
-            }
-
+            timesVencedoresMatchDayPorGrupo[chavesTimes[i]].sort((time1: any, time2: any) => {
+                if (time1.pontuacao < time2.pontuacao) {
+                    return 1;
+                  }
+                  if (time1.pontuacao > time2.pontuacao) {
+                    return -1;
+                  }
+                  return 0
+            })
         }
 
-        // console.log("Depois", definirVencedoresPara16DeFinais);
+        for (let i = 0; i < chavesTimes.length; i++) {
+            
+            definirVencedoresPara16DeFinais.push(
+                // @ts-ignore
+                timesVencedoresMatchDayPorGrupo[chavesTimes[i]][0], timesVencedoresMatchDayPorGrupo[chavesTimes[i]][1]
+            );
+        }
         
-
-        return definirVencedoresPara16DeFinais 
+        return this.timesEmCadaGrupo(definirVencedoresPara16DeFinais) 
     }
 
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
