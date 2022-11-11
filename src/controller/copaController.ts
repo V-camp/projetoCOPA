@@ -259,22 +259,20 @@ export class CopaController {
 
         const timesVencedoresMatchDayPorGrupo = this.timesEmCadaGrupo(timesVencedoresComDadosCompletoEPontuacao);
         const chavesTimes = Object.keys(timesVencedoresMatchDayPorGrupo)
-        console.log("chaves -", chavesTimes);
-        
-
-        for (let i = 0; i < 3; i++) {
+    
+        for (let i = 0; i < chavesTimes.length; i++) {
             // @ts-ignore
             let time = timesVencedoresMatchDayPorGrupo[chavesTimes[i]]
-            
-            for (let j = 0; j < 3; j++) {
+
+            for(let j = 0; j < time.length; j++) {
                 if (time[j].qtdcartaovermelho > 0) {
                     // @ts-ignore
-                    console.log("1", timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 3)
+                    timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 3
                 }
-
+                
                 if (time[j].qtdcartaoamarelo > 0) {
                     // @ts-ignore
-                    timesVencedoresMatchDayPorGrupo[chavesTimes[i][j]].pontuacao -= 1
+                    timesVencedoresMatchDayPorGrupo[chavesTimes[i]][j].pontuacao -= 1
                 }
             }
         }
@@ -282,25 +280,31 @@ export class CopaController {
         
         const definirVencedoresPara16DeFinais = []
 
-        // console.log("eee->", timesVencedoresMatchDayPorGrupo.timesNoGrupoA);
+        // console.log("antes->", timesVencedoresMatchDayPorGrupo);
         
 
-        // for (let i = 0; i < 3; i++) {
-        //     let time = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[i]
-        //     // @ts-ignore
-        //     let menorPontuacao = timesVencedoresMatchDayPorGrupo.timesNoGrupoA[0].pontuacao
-        //     console.log("mp =", menorPontuacao);
+        for (let i = 0; i < 3; i++) {
+             // @ts-ignore
+            let time = timesVencedoresMatchDayPorGrupo[chavesTimes[i]]
+            console.log(time);
             
-        //     // @ts-ignore
-        //     if (time.pontuacao >= menorPontuacao) {
-        //         definirVencedoresPara16DeFinais.push(time)
-        //         console.log("- ", definirVencedoresPara16DeFinais[i]);
-        //     } else {
-        //         // @ts-ignore
-        //         menorPontuacao = time.pontuacao
-        //         console.log("else", menorPontuacao);
-        //     }
-        // }
+            for(let j = 0; j < time.length; j++) {
+                // @ts-ignore
+                let menorPontuacao = time[0].pontuacao
+                console.log("mp =", menorPontuacao);
+                
+                // @ts-ignore
+                if (time[j].pontuacao >= menorPontuacao) {
+                    definirVencedoresPara16DeFinais.push(time[j])
+                    console.log("- ", definirVencedoresPara16DeFinais[j]);
+                } else {
+                    // @ts-ignore
+                    menorPontuacao = time[j].pontuacao
+                    console.log("else", menorPontuacao);
+                }
+            }
+
+        }
 
         // console.log("Depois", definirVencedoresPara16DeFinais);
         
