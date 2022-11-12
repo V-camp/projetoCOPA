@@ -1,3 +1,4 @@
+import bodyParser from "body-parser"
 import express, { Request, response, Response } from "express"
 import { IdadosTime } from "model/interfaces/DadosTime"
 import { CopaController } from "../controller/copaController"
@@ -16,6 +17,14 @@ server.get(`${path}`, async (req: Request, res: Response) => {
     }
 
     return res.send("Error");
+})
+
+server.post(`${path}/finais`, async (req: Request, res: Response) => {
+    try {
+        return res.send(await copaController.finais(req.body))
+    } catch (error) {
+        return response.json(error);
+    }
 })
 
 server.post(`${path}/cadastrar`, async (req: Request, res: Response) => {
