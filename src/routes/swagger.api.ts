@@ -30,7 +30,7 @@ export class SwaggerApi {
         }
 
         const swaggerSpec = swaggerJSDoc(opt);
-        // swaggerUi.generateHTML(swaggerSpec, { ...swaggerSpec, baseURL: "docs" });
+        swaggerUi.generateHTML(swaggerSpec, { ...swaggerUiOpts, baseURL: "docs" });
 
         server.get("/api-docs.json", (req: express.Request, res: express.Response) => {
             res.json(swaggerSpec)
