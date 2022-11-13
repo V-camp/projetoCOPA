@@ -590,7 +590,7 @@ server.post(`${path}/finais`, async (req: Request, res: Response) => {
     try {
         return res.send(await copaController.finais(req.body))
     } catch (error) {
-        return response.json(error);
+        return res.json(error);
     }
 })
 
