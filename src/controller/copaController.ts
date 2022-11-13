@@ -5,17 +5,23 @@ import { timesEmJogo } from "../model/enums/TimesEmJogo"
 import { IGruposTimes } from "model/interfaces/GruposDosTimes"
 import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
-import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
 import { ITimesDadosCompletos } from 'model/interfaces/TimeDadosCompletos';
 import { IPartida } from 'model/interfaces/Partida';
+import { IInputFinais, IOutputFinais } from 'model/interfaces/Finais';
 import { IVencedorMatchDay } from 'model/interfaces/VencedorMatchDay';
 
 //@ts-ignore
 import { PrismaClient } from '@prisma/client'
+import { ok } from 'assert';
+import { ITimesFinais } from 'model/interfaces/InputTimeFinais';
+import { TimeInputFinais } from 'model/TimesInputFinais';
+import { FinaisInput } from 'model/Finais';
+import { tipoDePartidasEnum } from 'model/enums/TipoDePartidas';
 
 const prisma = new PrismaClient()
 const utils = new Utils()
+
 
 export class CopaController {
     public async buscarTodosOsTimes(): Promise<Array<IdadosTime>> {
@@ -114,14 +120,460 @@ export class CopaController {
         throw "Times Insuficiente para montar o MatchDay";
     }
 
-    public async finais(inputPartidas: IInputMatchEFinais): Promise<string | unknown> {
+    public async finais(finais: FinaisInput): Promise <IOutputFinais | any> {
         try {
-            return "To Return" 
-            // TODO: Fazer esse endpoint receber uma lista com os times vencedores do matchday e retornar os proximos 8
-            // return this.vencedoresDesesseis(inputPartidas)
-        } catch (error:unknown) {
-            return error; 
+            const idPaisWhithoutClassification = []
+            const times = finais.times;
+            const timesVencedores = []
+
+
+            // check if ids of "times", is classifieds to "finais"
+            if (finais.tipoDeQualificacao == "OitavasFinais") {
+                for (let index = 0; index < times.length; index++) {
+                    let time = times[index];
+
+                    if(!await this.checkTimeClassification(time.idPais, finais.tipoDeQualificacao)){
+                        idPaisWhithoutClassification.push(time.idPais);
+                    }
+                }
+                if (idPaisWhithoutClassification.length > 0) {
+                    return "Os Paises com id/ids " + idPaisWhithoutClassification + " não estão classificados para finais";
+                }
+
+                let partidas = await this.montarPartidas(times, finais.tipoDeQualificacao)
+
+                for (let index = 0; index < partidas.length; index++) {
+                    const times = partidas[index];
+                    if(times[0].qtdgol == times[1].qtdgol){
+                        await prisma.vencedoresoitavasfinais.deleteMany()
+                        throw "Times " + times[0].idPais + " e " + times[1].idPais +" não podem ter a mesma quantidade de Gol, tem que haver penalts";
+                    }
+                    if (times[0].qtdgol > times[1].qtdgol){
+                        timesVencedores.push(times[0]) 
+                        await prisma.vencedoresoitavasfinais.create({
+                                data: {
+                                    id: times[0].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }else{
+                        timesVencedores.push(times[1])
+                        await prisma.vencedoresoitavasfinais.create({
+                                data: {
+                                    id: times[1].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }
+                }
+
+                const outPutFinais:IOutputFinais = {
+                    proximaEtapa: "QuartasFinais",
+                    times: timesVencedores
+                };
+                return outPutFinais 
+            }
+            
+            if (finais.tipoDeQualificacao == "QuartasFinais") {
+                for (let index = 0; index < times.length; index++) {
+                    let time = times[index];
+
+                    if(!await this.checkTimeClassification(time.idPais, finais.tipoDeQualificacao)){
+                        idPaisWhithoutClassification.push(time.idPais);
+                    }
+                }
+                if (idPaisWhithoutClassification.length > 0) {
+                    return "Os Paises com id/ids " + idPaisWhithoutClassification + " não estão classificados para finais";
+                }
+
+                let partidas = await this.montarPartidas(times, finais.tipoDeQualificacao)
+
+                for (let index = 0; index < partidas.length; index++) {
+                    const times = partidas[index];
+                    console.log(partidas[index])
+                    if(times[0].qtdgol == times[1].qtdgol){
+                        await prisma.vencedoresquartasfinais.deleteMany()
+                        throw "Times " + times[0].idPais + " e " + times[1].idPais +" não podem ter a mesma quantidade de Gol, tem que haver penalts";
+
+                    }
+                    if (times[0].qtdgol > times[1].qtdgol){
+                        timesVencedores.push(times[0]) 
+                        await prisma.vencedoresquartasfinais.create({
+                                data: {
+                                    id: times[0].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }else{
+                        timesVencedores.push(times[1])
+                        await prisma.vencedoresquartasfinais.create({
+                                data: {
+                                    id: times[1].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }
+                }
+
+                const outPutFinais:IOutputFinais = {
+                    proximaEtapa: "SemiFinais",
+                    times: timesVencedores
+                };
+                return outPutFinais 
+            }
+
+            if (finais.tipoDeQualificacao == "SemiFinais") {
+                for (let index = 0; index < times.length; index++) {
+                    let time = times[index];
+
+                    if(!await this.checkTimeClassification(time.idPais, finais.tipoDeQualificacao)){
+                        idPaisWhithoutClassification.push(time.idPais);
+                    }
+                }
+                if (idPaisWhithoutClassification.length > 0) {
+                    return "Os Paises com id/ids " + idPaisWhithoutClassification + " não estão classificados para finais";
+                }
+
+                let partidas = await this.montarPartidas(times, finais.tipoDeQualificacao)
+
+                for (let index = 0; index < partidas.length; index++) {
+                    const times = partidas[index];
+                    if(times[0].qtdgol == times[1].qtdgol){
+                        await prisma.vencedoresquartasfinais.deleteMany()
+                        throw "Times " + times[0].idPais + " e " + times[1].idPais +" não podem ter a mesma quantidade de Gol, tem que haver penalts";
+
+                    }
+                    if (times[0].qtdgol > times[1].qtdgol){
+                        timesVencedores.push(times[0]) 
+                        await prisma.vencedoressemifinais.create({
+                                data: {
+                                    id: times[0].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }else{
+                        timesVencedores.push(times[1])
+                        await prisma.vencedoressemifinais.create({
+                                data: {
+                                    id: times[1].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }
+                }
+
+                const outPutFinais:IOutputFinais = {
+                    proximaEtapa: "Final",
+                    times: timesVencedores
+                };
+                return outPutFinais 
+            }
+
+
+            if (finais.tipoDeQualificacao == "Final") {
+                for (let index = 0; index < times.length; index++) {
+                    let time = times[index];
+
+                    if(!await this.checkTimeClassification(time.idPais, finais.tipoDeQualificacao)){
+                        idPaisWhithoutClassification.push(time.idPais);
+                    }
+                }
+                if (idPaisWhithoutClassification.length > 0) {
+                    return "Os Paises com id/ids " + idPaisWhithoutClassification + " não estão classificados para finais";
+                }
+
+                let partidas = await this.montarPartidas(times, finais.tipoDeQualificacao)
+
+                for (let index = 0; index < partidas.length; index++) {
+                    const times = partidas[index];
+                    if(times[0].qtdgol == times[1].qtdgol){
+                        await prisma.vencedoresfinais.deleteMany()
+                        throw "Times " + times[0].idPais + " e " + times[1].idPais +" não podem ter a mesma quantidade de Gol, tem que haver penalts";
+
+                    }
+                    if (times[0].qtdgol > times[1].qtdgol){
+                        timesVencedores.push(times[0]) 
+                        await prisma.vencedoresfinais.create({
+                                data: {
+                                    id: times[0].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }else{
+                        timesVencedores.push(times[1])
+                        await prisma.vencedoresfinais.create({
+                                data: {
+                                    id: times[1].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }
+                }
+
+                const outPutFinais:IOutputFinais = {
+                    proximaEtapa: "Encerrado",
+                    times: timesVencedores
+                };
+                return outPutFinais 
+            }
+
+		}catch(error){
+			throw(error)
+		}
+    }
+    private async montarPartidas(times:Array<ITimesFinais>, tipoDeQualificacao:string) {
+        const grupoA = [];
+        const grupoB = [];
+        const grupoC = [];
+        const grupoD = [];
+        const grupoE = [];
+        const grupoF = [];
+        const grupoG = [];
+        const grupoH = [];
+
+        if (tipoDeQualificacao == "OitavasFinais") {
+            for (let index = 0; index < times.length; index++) {
+                let time = times[index];
+                let times_valor = await this.getTimeFromDb(time.idPais);
+                time['grupopertencente'] = times_valor.grupopertencente;
+
+                if(time.grupopertencente == 'A'){
+                    grupoA.push(time)
+                }
+
+                if(time.grupopertencente == 'B'){
+                    grupoB.push(time)
+                }
+
+                if(time.grupopertencente == 'C'){
+                    grupoC.push(time)
+                }
+
+                if(time.grupopertencente == 'D'){
+                    grupoD.push(time)
+                }
+
+                if(time.grupopertencente == 'E'){
+                    grupoE.push(time)
+                }
+
+                if(time.grupopertencente == 'F'){
+                    grupoF.push(time)
+                }
+
+                if(time.grupopertencente == 'G'){
+                    grupoG.push(time)
+                }
+
+                if(time.grupopertencente == 'H'){
+                    grupoH.push(time)
+                }
+
+            }
+            
+            const partidas:any = [];
+
+            partidas.push([grupoA[0], grupoB[1]]);
+            partidas.push([grupoA[1], grupoB[0]]);
+
+            partidas.push([grupoC[0], grupoD[1]]);
+            partidas.push([grupoC[1], grupoD[0]]);
+
+            partidas.push([grupoE[0], grupoF[1]]);
+            partidas.push([grupoE[1], grupoF[0]]);
+
+            partidas.push([grupoG[0], grupoH[1]]);
+            partidas.push([grupoG[1], grupoH[0]]);
+
+            return partidas;
         }
+
+        if (tipoDeQualificacao == "QuartasFinais") {
+            const partidas:any = [];
+            let idTimesPartidas = await prisma.vencedoresoitavasfinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 1},{ partida: 3},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+            
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            idTimesPartidas = await prisma.vencedoresoitavasfinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 5},{ partida: 7},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            idTimesPartidas = await prisma.vencedoresoitavasfinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 2},{ partida: 4},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            idTimesPartidas = await prisma.vencedoresoitavasfinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 6},{ partida: 8},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            return partidas 
+        }
+
+        if (tipoDeQualificacao == "SemiFinais") {
+            const partidas:any = [];
+            let idTimesPartidas = await prisma.vencedoresquartasfinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 1},{ partida: 2},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+            
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            idTimesPartidas = await prisma.vencedoresquartasfinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 3},{ partida: 4},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            return partidas 
+        }
+
+        if (tipoDeQualificacao == "Final") {
+            const partidas:any = [];
+            let idTimesPartidas = await prisma.vencedoressemifinais.findMany(
+                {
+                    where:{
+                        OR: [{ partida: 1},{ partida: 2},],},
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+            
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            console.log(partidas);
+            
+            return partidas 
+        }
+    }
+
+    private async getTimeFromDb(idPais:number) {
+        let time = await prisma.times.findUnique(
+            {
+                where: {
+                    id:idPais,
+                },
+            }
+        )
+        return time;
+    }
+
+    private async checkTimeClassification(idtime: number, tipoDeQualificacao: string) {
+        try {
+            if(tipoDeQualificacao == "OitavasFinais"){
+                const time = await prisma.vencedoresMatchDays.aggregate({
+                    where:{
+                        id:idtime
+                    },
+                    _count: true
+                })
+
+                if (time._count == 0) {
+                   return false 
+                }
+
+                return true;
+            }
+
+
+            if (tipoDeQualificacao == "QuartasFinais") {
+                const time = await prisma.vencedoresoitavasfinais.aggregate({
+                    where:{
+                        id:idtime
+                    },
+                    _count: true
+                })
+
+                if (time._count == 0) {
+                   return false 
+                }
+
+                return true;
+            }
+
+            if (tipoDeQualificacao == "SemiFinais") {
+                const time = await prisma.vencedoresquartasfinais.aggregate({
+                    where:{
+                        id:idtime
+                    },
+                    _count: true
+                })
+
+                if (time._count == 0) {
+                   return false 
+                }
+
+                return true;
+            }
+
+            if (tipoDeQualificacao == "Final") {
+                const time = await prisma.vencedoressemifinais.aggregate({
+                    where:{
+                        id:idtime
+                    },
+                    _count: true
+                })
+
+                if (time._count == 0) {
+                   return false 
+                }
+
+                return true;
+            }
+		}catch(error){
+			throw(error)
+		}
     }
 
     public async decidirVencedor(inputPartidas: IInputMatchEFinais): Promise<string | undefined> {
@@ -384,6 +836,7 @@ export class CopaController {
 
             return "times criados"
         } catch(error) {
+            console.log(error);
             return "Erro ao cadastrar os times"
         }
     }

@@ -43,3 +43,22 @@ model timesVencedoresDasPartidas {
 }
 
 
+model vencedoresoitavasfinais {
+    id                  Int    @unique
+    partida             Int
+}
+
+model vencedoresquartasfinais {
+    id                  Int    @unique
+    partida             Int
+}
+
+model vencedoressemifinais {
+    id                  Int    @unique
+    partida             Int
+}
+
+model vencedoresfinais {
+    id                  Int    @unique
+    partida             Int
+}
