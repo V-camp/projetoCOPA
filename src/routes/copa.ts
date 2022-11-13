@@ -1,3 +1,4 @@
+import bodyParser from "body-parser"
 import express, { Request, Response } from "express"
 import { CopaController } from "../controller/copaController"
 
@@ -582,6 +583,14 @@ server.get(`${path}/buscarTimesVencedores`, async (req: Request, res: Response) 
         return res.send("Error");
     } catch(error) {
         return error
+    }
+})
+
+server.post(`${path}/finais`, async (req: Request, res: Response) => {
+    try {
+        return res.send(await copaController.finais(req.body))
+    } catch (error) {
+        return response.json(error);
     }
 })
 

@@ -7,10 +7,12 @@ import { IDisputasMatchDays } from "model/interfaces/DisputasMatchDays"
 import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { tipoDePartidasEnum } from "../model/enums/TipoDePartidas";
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
-import { PrismaClient } from '@prisma/client'
 import { ITimesDadosCompletos } from 'model/interfaces/TimeDadosCompletos';
 import { IPartida } from 'model/interfaces/Partida';
 import { IVencedorMatchDay } from 'model/interfaces/VencedorMatchDay';
+
+//@ts-ignore
+import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 const utils = new Utils()
@@ -22,7 +24,7 @@ export class CopaController {
         return time
     }
 
-    public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {        
+    public async cadastrarTime(cadastroTime: IdadosTime): Promise<IdadosTime> {
         const quantidadeDeTimes: Array<IdadosTime> = await this.buscarTodosOsTimes()
 
         const timeJaExiste = quantidadeDeTimes.find((timeExistente) => timeExistente.nomedopais === cadastroTime.nomedopais)
@@ -105,7 +107,6 @@ export class CopaController {
     }
 
     public matchDays(gruposTimes: IGruposTimes, timesNoDB: Array<IdadosTime>): IDisputasMatchDays {
-        
         if(timesNoDB.length  === 32) {
             return utils.criarTabelaMatchDay(gruposTimes);
         }
@@ -113,24 +114,18 @@ export class CopaController {
         throw "Times Insuficiente para montar o MatchDay";
     }
 
-
+    public async finais(inputPartidas: IInputMatchEFinais): Promise<string | unknown> {
+        try {
+            return "To Return" 
+            // TODO: Fazer esse endpoint receber uma lista com os times vencedores do matchday e retornar os proximos 8
+            // return this.vencedoresDesesseis(inputPartidas)
+        } catch (error:unknown) {
+            return error; 
+        }
+    }
 
     public async decidirVencedor(inputPartidas: IInputMatchEFinais): Promise<string | undefined> {
-        let vendoresDoMatchDay;
-
-        if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY1) {
-            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas)
-        }
-
-        else if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY2) {
-            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas)
-        }
-
-        else if (inputPartidas.tipoDeQualificacao === tipoDePartidasEnum.MATCHDAY3) {
-            vendoresDoMatchDay = this.vencedoresMatchDay(inputPartidas)
-        }
-
-        return vendoresDoMatchDay
+        return this.vencedoresMatchDay(inputPartidas)
     }
 
     private async vencedoresMatchDay(inputPartidas: IInputMatchEFinais): Promise<string> {
@@ -209,7 +204,7 @@ export class CopaController {
                             tipodepartida: tipoDePartida || timesVencedorExiste.tipodepartida
                         },
                     });
-                } else {                
+                } else {
                     await prisma.timesVencedoresDasPartidas.create({
                         data: {
                             id: vencedoresDasPartidas[i].idPais,
@@ -370,8 +365,9 @@ export class CopaController {
         return prisma.vencedoresMatchDays.findMany()
     }
 
+
     public async cadastrarTodosTimes(cadastroDosTime: Array<IdadosTime>): Promise<string> {
-        try {   
+        try {
             for (let i = 0; i < cadastroDosTime.length; i++) {
                     await prisma.times.create({
                         data: {
@@ -385,10 +381,10 @@ export class CopaController {
                         }
                     })
             }
-            
+
             return "times criados"
         } catch(error) {
             return "Erro ao cadastrar os times"
-        }           
+        }
     }
 }
