@@ -62,3 +62,13 @@ model vencedoresfinais {
     id                  Int    @unique
     partida             Int
 }
+
+model competidoresterceiro {
+    id                  Int    @unique
+    partida             Int
+}
+
+model vencedoresterceiro {
+    id                  Int    @unique
+    partida             Int
+}

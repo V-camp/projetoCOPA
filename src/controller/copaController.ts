@@ -8,7 +8,7 @@ import { IInputMatchEFinais } from "../model/interfaces/InputMatchEFinais";
 import { ITimesVencedores } from 'model/interfaces/TimesVencedores';
 import { ITimesDadosCompletos } from 'model/interfaces/TimeDadosCompletos';
 import { IPartida } from 'model/interfaces/Partida';
-import { IInputFinais, IOutputFinais } from 'model/interfaces/Finais';
+import { IInputFinais, IOutputFinail, IOutputFinais, IOutputTerceiro } from 'model/interfaces/Finais';
 import { IVencedorMatchDay } from 'model/interfaces/VencedorMatchDay';
 
 //@ts-ignore
@@ -125,6 +125,7 @@ export class CopaController {
             const idPaisWhithoutClassification = []
             const times = finais.times;
             const timesVencedores = []
+            const segundoColocado = []
 
 
             // check if ids of "times", is classifieds to "finais"
@@ -200,9 +201,18 @@ export class CopaController {
                     }
                     if (times[0].qtdgol > times[1].qtdgol){
                         timesVencedores.push(times[0]) 
+
                         await prisma.vencedoresquartasfinais.create({
                                 data: {
                                     id: times[0].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+
+                        await prisma.competidoresterceiro.create({
+                                data: {
+                                    id: times[1].idPais,
                                     partida: index + 1,
                                 },
                             }
@@ -212,6 +222,14 @@ export class CopaController {
                         await prisma.vencedoresquartasfinais.create({
                                 data: {
                                     id: times[1].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+
+                        await prisma.competidoresterceiro.create({
+                                data: {
+                                    id: times[0].idPais,
                                     partida: index + 1,
                                 },
                             }
@@ -299,6 +317,7 @@ export class CopaController {
                     }
                     if (times[0].qtdgol > times[1].qtdgol){
                         timesVencedores.push(times[0]) 
+                        segundoColocado.push(times[1])
                         await prisma.vencedoresfinais.create({
                                 data: {
                                     id: times[0].idPais,
@@ -306,8 +325,10 @@ export class CopaController {
                                 },
                             }
                         );
+
                     }else{
                         timesVencedores.push(times[1])
+                        segundoColocado.push(times[0])
                         await prisma.vencedoresfinais.create({
                                 data: {
                                     id: times[1].idPais,
@@ -318,9 +339,60 @@ export class CopaController {
                     }
                 }
 
-                const outPutFinais:IOutputFinais = {
+                const outPutFinais:IOutputFinail = {
+                    proximaEtapa: "DecidirTerceiro",
+                    campeao: timesVencedores,
+                    segundo: segundoColocado,
+                };
+                return outPutFinais 
+            }
+
+            if (finais.tipoDeQualificacao == "DecidirTerceiro") {
+                for (let index = 0; index < times.length; index++) {
+                    let time = times[index];
+
+                    if(!await this.checkTimeClassification(time.idPais, finais.tipoDeQualificacao)){
+                        idPaisWhithoutClassification.push(time.idPais);
+                    }
+                }
+                if (idPaisWhithoutClassification.length > 0) {
+                    return "Os Paises com id/ids " + idPaisWhithoutClassification + " não estão classificados para finais";
+                }
+
+                let partidas = await this.montarPartidas(times, finais.tipoDeQualificacao)
+
+                for (let index = 0; index < partidas.length; index++) {
+                    const times = partidas[index];
+                    if(times[0].qtdgol == times[1].qtdgol){
+                        await prisma.vencedoresfinais.deleteMany()
+                        throw "Times " + times[0].idPais + " e " + times[1].idPais +" não podem ter a mesma quantidade de Gol, tem que haver penalts";
+
+                    }
+                    if (times[0].qtdgol > times[1].qtdgol){
+                        timesVencedores.push(times[0]) 
+                        await prisma.vencedoresterceiro.create({
+                                data: {
+                                    id: times[0].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+
+                    }else{
+                        timesVencedores.push(times[1])
+                        await prisma.vencedoresterceiro.create({
+                                data: {
+                                    id: times[1].idPais,
+                                    partida: index + 1,
+                                },
+                            }
+                        );
+                    }
+                }
+
+                const outPutFinais:IOutputTerceiro = {
                     proximaEtapa: "Encerrado",
-                    times: timesVencedores
+                    terceiro: timesVencedores,
                 };
                 return outPutFinais 
             }
@@ -496,6 +568,23 @@ export class CopaController {
             
             return partidas 
         }
+
+        if (tipoDeQualificacao == "DecidirTerceiro") {
+            const partidas:any = [];
+            let idTimesPartidas = await prisma.competidoresterceiro.findMany(
+                {
+                    select: {
+                        id: true,
+                    }
+                },
+            );
+            
+            partidas.push([times.find((obj) => { return obj.idPais == idTimesPartidas[0].id}),times.find((obj) => { return obj.idPais == idTimesPartidas[1].id})]);
+
+            console.log(partidas);
+            
+            return partidas 
+        }
     }
 
     private async getTimeFromDb(idPais:number) {
@@ -559,6 +648,21 @@ export class CopaController {
 
             if (tipoDeQualificacao == "Final") {
                 const time = await prisma.vencedoressemifinais.aggregate({
+                    where:{
+                        id:idtime
+                    },
+                    _count: true
+                })
+
+                if (time._count == 0) {
+                   return false 
+                }
+
+                return true;
+            }
+
+            if (tipoDeQualificacao == "DecidirTerceiro") {
+                const time = await prisma.competidoresterceiro.aggregate({
                     where:{
                         id:idtime
                     },

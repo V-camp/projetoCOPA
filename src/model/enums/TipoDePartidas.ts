@@ -6,5 +6,6 @@ export enum tipoDePartidasEnum {
     QUARTASFINAIS = "QuartasFinais",
     SEMIFINAIS = "SemiFinais",
     FINAL = "Final",
-    ENCERRADO = "Encerrado"
+    ENCERRADO = "Encerrado",
+    DECIDIRTERCEIRO = "DecidirTerceiro"
 }

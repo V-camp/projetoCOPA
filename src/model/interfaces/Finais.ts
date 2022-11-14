@@ -10,3 +10,14 @@ export interface IOutputFinais {
     proximaEtapa: string,
     times: Array<ITimesFinais>
 }
+
+export interface IOutputFinail {
+    proximaEtapa: string,
+    campeao: Array<ITimesFinais>
+    segundo: Array<ITimesFinais>
+}
+
+export interface IOutputTerceiro {
+    proximaEtapa: string,
+    terceiro: Array<ITimesFinais>
+}
