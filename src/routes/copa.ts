@@ -586,6 +586,51 @@ server.get(`${path}/buscarTimesVencedores`, async (req: Request, res: Response) 
     }
 })
 
+/**
+ * @swagger
+ *  paths:
+ *  /copa/finais:
+ *    post:
+ *      tags:
+ *        - Copa
+ *      summary: Retorna as finais 
+ *      description: Retorna as finais
+ *      parameters:
+ *        - in: body
+ *          name: copa
+ *          description: Insira um array de objetos com as seguintes propriedades
+ *          schema:
+ *            type: array
+ *            required:
+ *              - tipoDeQualificacao
+ *              - times
+ *            properties:
+ *              tipoDeQualificacao:
+ *                type: string
+ *              times:
+ *                type: array
+ *      responses:
+ *        200:
+ *          description: Successful operation
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: array
+ *                example:
+ *                 {
+ *                    proximaEtapa: "Encerrado",
+ *                    times: [
+ *                      {
+ *                        idPais: 86,
+ *                        qtdgol: 7,
+ *                        qtdcartaovermelho: 0,
+ *                        qtdcartaoamarelo: 0
+ *                      }  
+ *                    ]
+ *                 }
+ *        422:
+ *          description: Falha ao acessar DB
+ */
 server.post(`${path}/finais`, async (req: Request, res: Response) => {
     try {
         return res.send(await copaController.finais(req.body))
