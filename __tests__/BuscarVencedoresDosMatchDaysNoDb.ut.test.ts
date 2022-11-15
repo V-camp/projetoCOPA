@@ -12,7 +12,7 @@ describe("Teste do buscar Vencedores Dos MatchDays No Db", () => {
     test('buscar Vencedores Dos MatchDays No Db... Teste ', async () => {
       
         // @ts-ignore
-        prismaMock.times.findMany.mockRejectedValue(input)
+        // prismaMock.times.findMany.mockRejectedValue(input)
 
         const result = await copaController.buscarVencedoresDosMatchDaysNoDb()
         expect(result).toBeDefined()

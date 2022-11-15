@@ -12,7 +12,7 @@ describe("Teste do Buscar times vencedores", () => {
     test('Buscar times vencedores... Teste ', async () => {
       
         // @ts-ignore
-        prismaMock.times.findMany.mockRejectedValue(input)
+        // prismaMock.times.findMany.mockRejectedValue(input)
 
         const result = await copaController.buscarTimesVendores()
         expect(result).toBeDefined()

@@ -12,7 +12,7 @@ describe("Teste do listar as disputadas iniciais", () => {
     test('listar as disputadas iniciais... Teste ', async () => {
       
         // @ts-ignore
-        prismaMock.times.findMany.mockRejectedValue(input)
+        // prismaMock.times.findMany.mockRejectedValue(input)
 
         const result = await copaController.listarAsDisputadasIniciais()
         expect(result).toBeDefined()

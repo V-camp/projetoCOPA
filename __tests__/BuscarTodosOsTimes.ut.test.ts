@@ -12,7 +12,7 @@ describe("Teste do Buscar todos os times", () => {
     test('Buscar todos os times... Teste', async () => {
       
         // @ts-ignore
-        prismaMock.times.findMany.mockRejectedValue(input)
+        // prismaMock.times.findMany.mockRejectedValue(input)
 
         const result = await copaController.buscarTodosOsTimes()
         expect(result).toBeDefined()

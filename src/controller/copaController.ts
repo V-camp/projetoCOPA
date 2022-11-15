@@ -415,6 +415,7 @@ export class CopaController {
             for (let index = 0; index < times.length; index++) {
                 let time = times[index];
                 let times_valor = await this.getTimeFromDb(time.idPais);
+                // @ts-ignore
                 time['grupopertencente'] = times_valor.grupopertencente;
 
                 if(time.grupopertencente == 'A'){
